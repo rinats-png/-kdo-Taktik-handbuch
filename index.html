@@ -13,32 +13,68 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap" />
 <style>
 /* ==========================================================================
-   Design-Tokens — übernommen aus dem Stackside-Designsystem (globals.css).
-   Eine Grünfamilie, ein Papierweiß, eine Haarlinie. Bewusst hell: das
-   Halbton-Feld ist als Tinte auf Papier gebaut.
+   Design-Tokens
+   --------------------------------------------------------------------------
+   Grundfläche ist Graphit, nicht Schwarz: Carbon Black #111418 hat einen
+   leichten Blaustich und eine Nachbarschaft aus zwei weiteren Dunkelstufen —
+   deshalb wirkt die Seite tief statt plakativ. Reines Schwarz (#0A0A0A) kommt
+   nur dort vor, wo eine Fläche buchstäblich hinter allem liegt.
+
+   Jede Farbe hat genau eine Aufgabe. Die Kontrastwerte in den Kommentaren sind
+   gegen die Grundfläche gemessen (WCAG AA verlangt 4.5:1 für Fließtext,
+   3:1 für große Schrift und Bedienelemente).
    ========================================================================== */
 :root{
-  --background:#f0f3f4;
-  --foreground:#000000;
-  --accent:#00ff99;
-  --surface:#fdffff;
-  --hairline:rgba(0,0,0,.1);
-  --hairline-strong:rgba(0,0,0,.2);
-  --muted:rgba(0,0,0,.55);
+  /* --- Flächen, von hinten nach vorn ------------------------------------- */
+  --ink-deep:#0A0A0A;            /* Jet Black — Vorhänge, Fußzeile, Menü      */
+  --background:#111418;          /* Carbon Black — die Grundfläche            */
+  --surface:#191E24;             /* Graphit — Karten und Pillen (abgeleitet)  */
+  --surface-2:#151515;           /* Sumi Ink — zweite, neutrale Fläche        */
+
+  /* --- Schrift ------------------------------------------------------------ */
+  --foreground:#F7F7F1;          /* Off White     — Fließtext        17.2:1   */
+  --secondary:#C9D0D6;           /* Chrome Silver — Beschreibungen   11.9:1   */
+  --muted:#A8A49A;               /* Stone Path    — Beiwerk           7.4:1   */
+  --on-accent:#0A0A0A;           /* Schrift auf allen Farbflächen             */
+
+  /* --- Linien und stumme Töne --------------------------------------------- */
+  --steel:#707981;               /* Steel Gray — Ränder, Nav-Punkte   4.2:1   */
+  --smoke:#6F7780;               /* Smoke Gray — inaktive Zustände            */
+  --hairline:rgba(201,208,214,.14);
+  --hairline-strong:rgba(201,208,214,.30);
+
+  /* --- Gold: die Marke ----------------------------------------------------
+     Das Zeichen der Einheit und alles, was zu ihm gehört. Drei Stufen, damit
+     Gold sowohl Fläche als auch Schrift sein kann.                           */
+  --accent:#C9A961;              /* Gold          — Marke, Aktion     8.2:1   */
+  --accent-soft:#E4C87E;         /* Hellgold      — Gold als Schrift 11.3:1   */
+  --accent-deep:#8A6E2F;         /* Bronze        — nur Fläche/Rand   3.8:1   */
+
+  /* --- Zustände: die Grüntöne der Vorlagen -------------------------------- */
+  --ok:#25C77A;                  /* Signal Green  — erledigt, richtig 8.4:1   */
+  --warn:#C7FF2E;                /* Electric Lime — Achtung, Fehler  15.6:1   */
+
+  /* --- Bereichsfarben ------------------------------------------------------ */
+  --garden:#75856A;              /* Garden Green  — Besonderheiten            */
+  --mint:#B7F3D0;                /* Fresh Mint    — Spezialisierungen         */
+  --moss:#3F4B3A;                /* Moss Shadow   — Merksatz-Fläche           */
+  --ice:#E7FFF2;                 /* Ice Mint      — Schrift darauf    8.8:1   */
+  --display:#EEF1EA;             /* Mist White    — Überschriften    16.2:1   */
 
   --radius-card:1rem;
 
-  /* Preloader */
-  --preloader-ground:#000000;
+  /* Preloader — schwarzer Vorhang, goldener Schleier, Sweep Gold → Chrom */
+  --preloader-ground:var(--ink-deep);
   --preloader-veil:var(--accent);
   --preloader-dial-from:var(--accent);
-  --preloader-dial-to:#48c7c9;
+  --preloader-dial-to:#C9D0D6;
 
-  /* Halbton-Feld */
-  --halftone-bg:#f0f3f4;
-  --halftone-ink-light:#aeff00;
-  --halftone-ink-mid:#00bd71;
-  --halftone-ink-deep:#007548;
+  /* Halbton-Feld — die Rampe ist die Goldfamilie, damit das Zeichen im
+     Hintergrund dieselbe Farbe trägt wie das Abzeichen im Kopf. */
+  --halftone-bg:#111418;
+  --halftone-ink-light:#E4C87E;
+  --halftone-ink-mid:#C9A961;
+  --halftone-ink-deep:#8A6E2F;
 
   /* Typo-Skala — mobiles Ende */
   --size-display:2.5rem;
@@ -83,7 +119,8 @@ button,input,textarea,select{font:inherit;color:inherit}
 a{color:inherit;text-decoration:none}
 ul,ol{list-style:none;padding:0}
 i,em{font-style:italic}
-:focus-visible{outline:2px solid var(--foreground);outline-offset:3px;border-radius:.25rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:.25rem}
+::selection{background:var(--accent);color:var(--on-accent)}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
@@ -97,7 +134,7 @@ i,em{font-style:italic}
    auszubleichen. */
 #field::after{
   content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(180deg,rgba(240,243,244,.22) 0%,rgba(240,243,244,.04) 45%,rgba(240,243,244,.28) 100%);
+  background:linear-gradient(180deg,rgba(17,20,24,.30) 0%,rgba(17,20,24,.06) 45%,rgba(17,20,24,.40) 100%);
 }
 
 /* ==========================================================================
@@ -108,14 +145,14 @@ i,em{font-style:italic}
 #preloader .veil{background:var(--preloader-veil)}
 #preloader .ground{background:var(--preloader-ground)}
 .dial{position:relative;display:grid;place-items:center;width:100%;height:100%}
-.dial svg{position:absolute;width:36.9375rem;height:36.9375rem;color:#fff}
+.dial svg{position:absolute;width:36.9375rem;height:36.9375rem;color:var(--secondary)}
 .dial .disc{
   width:18.6875rem;height:18.6875rem;border-radius:9999px;
   background:conic-gradient(from 180deg,var(--preloader-dial-from),var(--preloader-dial-to));
 }
 .dial .count{
   position:absolute;top:calc(50% + 12.6875rem);
-  font-size:var(--text-stat);font-style:italic;line-height:1;color:#fff;
+  font-size:var(--text-stat);font-style:italic;line-height:1;color:var(--foreground);
 }
 @media (max-width:1023px){
   .dial svg{width:min(80vw,26rem);height:min(80vw,26rem)}
@@ -156,41 +193,41 @@ i,em{font-style:italic}
 .nav-pill a[data-active="true"]::after{
   content:"";position:absolute;left:0;right:0;bottom:-.4rem;height:2px;border-radius:2px;background:var(--accent);
 }
-.nav-pill .dot{width:.25rem;height:.25rem;border-radius:9999px;background:var(--hairline-strong);flex:none}
+.nav-pill .dot{width:.25rem;height:.25rem;border-radius:9999px;background:var(--steel);flex:none}
 
 .header-cta{display:flex;align-items:center;gap:.25rem}
 .cta-btn{
   height:3.125rem;width:9.1875rem;border-radius:9999px;
-  background:var(--accent);border:1px solid var(--hairline);
+  background:var(--accent);color:var(--on-accent);border:1px solid var(--accent-deep);
   display:grid;place-items:center;font-size:var(--text-body);cursor:pointer;
 }
 .cta-twin{
   width:3.125rem;height:3.125rem;border-radius:9999px;
-  background:var(--accent);border:1px solid var(--hairline);
+  background:var(--accent);border:1px solid var(--accent-deep);
   display:grid;place-items:center;flex:none;
 }
 .cta-twin span{
-  width:1.875rem;height:1.875rem;border-radius:9999px;background:var(--surface);
-  display:grid;place-items:center;
+  width:1.875rem;height:1.875rem;border-radius:9999px;background:var(--ink-deep);
+  color:var(--accent);display:grid;place-items:center;
 }
 .cta-twin svg{width:.5rem;height:.41rem}
 
 .burger{
   display:none;width:3.125rem;height:3.125rem;border-radius:9999px;
-  background:var(--accent);border:1px solid var(--hairline);
+  background:var(--accent);border:1px solid var(--accent-deep);
   cursor:pointer;place-items:center;gap:.375rem;flex-direction:column;
 }
-.burger i{display:block;width:1.125rem;height:1px;background:var(--foreground)}
+.burger i{display:block;width:1.125rem;height:1px;background:var(--on-accent)}
 
 /* Mobiles Menü — schwarzer Vorhang, gleiche Kurve wie der Preloader */
-#menu{position:fixed;inset:0;z-index:90;background:var(--preloader-ground);color:#fff;
+#menu{position:fixed;inset:0;z-index:90;background:var(--ink-deep);color:var(--foreground);
   display:flex;flex-direction:column;justify-content:center;gap:1.25rem;padding:6rem 1.25rem 2.5rem;will-change:transform}
 #menu[hidden]{display:none}
 #menu a{font-size:var(--text-menu);line-height:1.1}
-#menu .menu-cta{margin-top:1.5rem;align-self:flex-start;background:var(--accent);color:var(--foreground);
+#menu .menu-cta{margin-top:1.5rem;align-self:flex-start;background:var(--accent);color:var(--on-accent);
   border-radius:9999px;padding:.875rem 1.75rem;font-size:1.125rem}
 #menu .menu-close{position:absolute;top:1.25rem;right:1.25rem;width:3rem;height:3rem;border-radius:9999px;
-  background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;cursor:pointer;font-size:1.25rem}
+  background:transparent;border:1px solid var(--hairline-strong);color:var(--foreground);cursor:pointer;font-size:1.25rem}
 
 /* ==========================================================================
    Hero — der 1440x800-Rahmen
@@ -198,20 +235,23 @@ i,em{font-style:italic}
 .hero{position:relative;display:flex;flex-direction:column;gap:2.5rem;padding:5rem 1.25rem 2.5rem}
 
 .headline-wrap{position:relative;font-size:var(--text-display)}
-.headline{font-size:1em;font-weight:300;line-height:1;position:relative;z-index:1}
+.headline{font-size:1em;font-weight:300;line-height:1;position:relative;z-index:1;color:var(--display)}
 .headline i{font-style:italic}
 .headline .wrd-hold{display:inline-block;white-space:nowrap}
 .headline .ltr{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+/* Gold statt Bronze — aber dafür tiefer gelegt: helle Schrift auf Gold käme
+   nur auf 1.9:1. Der Balken sitzt jetzt unterhalb der Grundlinie und berührt
+   die Glyphen nur noch mit rund 3 px, also nirgends dort, wo gelesen wird. */
 .headline-bar{
-  position:absolute;z-index:0;bottom:-.2em;left:-.125em;height:.45em;width:4.025em;
+  position:absolute;z-index:0;bottom:-.28em;left:-.125em;height:.32em;width:4.025em;
   border-radius:9999px;background:var(--accent);transform-origin:left;
 }
 
 .copy{position:relative;display:flex;gap:2rem}
-.copy-rule{width:1px;background:var(--foreground);transform-origin:top;flex:none}
+.copy-rule{width:1px;background:var(--accent-deep);transform-origin:top;flex:none}
 .copy-text{display:flex;flex-direction:column;gap:1.25rem}
-.lead{font-size:var(--text-lead);line-height:1.2}
-.body-copy{font-size:var(--text-body);line-height:1.2}
+.lead{font-size:var(--text-lead);line-height:1.2;color:var(--foreground)}
+.body-copy{font-size:var(--text-body);line-height:1.2;color:var(--secondary)}
 .wrd{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
 
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
@@ -219,32 +259,33 @@ i,em{font-style:italic}
   padding:1.5rem;border-radius:var(--radius-card);background:var(--surface);
   border:1px solid var(--hairline);display:flex;flex-direction:column;gap:.75rem;
 }
-.stat-card[data-accent="true"]{border-color:var(--accent)}
+.stat-card[data-accent="true"]{border-color:var(--accent-deep)}
+.stat-card[data-accent="true"] .val{color:var(--accent-soft)}
 .stat-card .val{font-size:var(--text-stat);font-style:italic;line-height:1}
-.stat-card .lbl{font-family:"Mulish",system-ui,sans-serif;font-size:var(--text-body);line-height:1.2}
+.stat-card .lbl{font-family:"Mulish",system-ui,sans-serif;font-size:var(--text-body);line-height:1.2;color:var(--secondary)}
 
 /* Suchpille (im Entwurf die Request-Form) */
 .search-pill{
-  position:relative;background:var(--foreground);border-radius:9999px;
+  position:relative;background:var(--surface-2);border:1px solid var(--hairline);border-radius:9999px;
   display:flex;flex-direction:row;align-items:center;gap:.6875rem;
   padding:.125rem .125rem .125rem 2rem;
 }
 .search-pill input{
   width:14rem;background:transparent;border:0;outline:none;
-  font-size:var(--text-body);color:var(--surface);
+  font-size:var(--text-body);color:var(--foreground);
 }
-.search-pill input::placeholder{color:var(--surface);opacity:.55}
+.search-pill input::placeholder{color:var(--muted);opacity:1}
 .search-submit{
-  height:2.9375rem;border-radius:9999px;background:var(--accent);border:0;
+  height:2.9375rem;border-radius:9999px;background:var(--accent);color:var(--on-accent);border:0;
   padding:.875rem 1.5rem;display:flex;align-items:center;gap:.5rem;
   font-size:var(--text-body);cursor:pointer;white-space:nowrap;
 }
-.search-submit .bead{width:.5625rem;height:.5625rem;border-radius:9999px;border:1px solid var(--foreground);background:var(--surface)}
+.search-submit .bead{width:.5625rem;height:.5625rem;border-radius:9999px;border:1px solid var(--accent-deep);background:var(--on-accent)}
 
 .search-results{
   position:absolute;left:0;bottom:calc(100% + .625rem);width:min(30rem,calc(100vw - 2.5rem));
   background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);
-  box-shadow:0 1.5rem 3rem rgba(0,0,0,.12);overflow:hidden;z-index:30;max-height:22rem;overflow-y:auto;
+  box-shadow:0 1.5rem 3rem rgba(0,0,0,.55);overflow:hidden;z-index:30;max-height:22rem;overflow-y:auto;
 }
 .search-results[hidden]{display:none}
 .search-results li a,.search-results li button{
@@ -253,8 +294,8 @@ i,em{font-style:italic}
 }
 .search-results li:last-child a,.search-results li:last-child button{border-bottom:0}
 .search-results .hit-sec{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.search-results .hit-title{font-size:var(--text-body);line-height:1.3}
-.search-results li [aria-selected="true"],.search-results li a:hover,.search-results li button:hover{background:rgba(0,0,0,.04)}
+.search-results .hit-title{font-size:var(--text-body);line-height:1.3;color:var(--foreground)}
+.search-results li [aria-selected="true"],.search-results li a:hover,.search-results li button:hover{background:rgba(201,208,214,.07)}
 .search-empty{padding:.875rem 1rem;font-size:var(--text-body);color:var(--muted)}
 
 /* Fortschrittspille (im Entwurf die Trust-Pille) */
@@ -264,12 +305,12 @@ i,em{font-style:italic}
   padding:.125rem .125rem .125rem 1.5rem;gap:1rem;
 }
 .progress-pill .txt{font-size:var(--text-body);line-height:1.1;white-space:nowrap}
-.progress-pill .txt b{font-weight:400;font-style:italic}
+.progress-pill .txt b{font-weight:400;font-style:italic;color:var(--ok)}
 .progress-track{flex:1;height:.375rem;border-radius:9999px;background:var(--hairline);overflow:hidden;min-width:3rem}
-.progress-track i{display:block;height:100%;width:0%;background:var(--accent);border-radius:9999px;transition:width .45s cubic-bezier(.22,1,.36,1)}
+.progress-track i{display:block;height:100%;width:0%;background:var(--ok);border-radius:9999px;transition:width .45s cubic-bezier(.22,1,.36,1)}
 .progress-reset{
-  height:2.9375rem;padding:0 1.25rem;border-radius:9999px;background:var(--foreground);color:var(--surface);
-  border:0;cursor:pointer;font-size:.875rem;white-space:nowrap;flex:none;
+  height:2.9375rem;padding:0 1.25rem;border-radius:9999px;background:var(--ink-deep);color:var(--secondary);
+  border:1px solid var(--hairline);cursor:pointer;font-size:.875rem;white-space:nowrap;flex:none;
 }
 
 .scroll-hint{display:none}
@@ -299,7 +340,7 @@ i,em{font-style:italic}
 @media (max-width:1023px){
   /* Auf schmalen Schirmen zoomt das Feld das Zeichen stark heran; ohne einen
      kräftigeren Schleier steht der Text im Raster statt darauf. */
-  #field::after{background:linear-gradient(180deg,rgba(240,243,244,.74) 0%,rgba(240,243,244,.8) 55%,rgba(240,243,244,.9) 100%)}
+  #field::after{background:linear-gradient(180deg,rgba(17,20,24,.78) 0%,rgba(17,20,24,.84) 55%,rgba(17,20,24,.92) 100%)}
   .hero{hyphens:auto}
   .stats{min-width:0}
   .stat-card{padding:1.125rem;min-width:0}
@@ -312,7 +353,7 @@ i,em{font-style:italic}
   .search-pill{
     flex-direction:column;align-items:stretch;gap:.5rem;border-radius:var(--radius-card);padding:.5rem;
   }
-  .search-pill input{width:100%;padding:.875rem 1rem;background:rgba(255,255,255,.07);border-radius:.75rem}
+  .search-pill input{width:100%;padding:.875rem 1rem;background:rgba(201,208,214,.07);border-radius:.75rem}
   .search-submit{justify-content:center}
   .search-results{bottom:auto;top:calc(100% + .5rem)}
   .progress-pill{flex-wrap:wrap;height:auto;border-radius:var(--radius-card);padding:1rem;gap:.75rem}
@@ -325,8 +366,8 @@ i,em{font-style:italic}
 .paper{
   position:relative;
   background:linear-gradient(180deg,
-    rgba(240,243,244,0) 0,
-    rgba(240,243,244,.88) 5rem,
+    rgba(17,20,24,0) 0,
+    rgba(17,20,24,.90) 5rem,
     var(--background) 11rem);
 }
 .shell{width:100%;max-width:90rem;margin:0 auto;padding:0 1.25rem}
@@ -341,11 +382,12 @@ i,em{font-style:italic}
   display:inline-flex;align-items:center;gap:.5rem;align-self:flex-start;
   font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;
   background:var(--surface);border:1px solid var(--hairline);border-radius:9999px;padding:.5rem 1rem;
+  color:var(--secondary);
 }
 .kicker::before{content:"";width:.4rem;height:.4rem;border-radius:9999px;background:var(--accent)}
-.chapter-title{font-size:clamp(2rem,3.6vw,3.25rem);font-weight:300;line-height:1.05}
+.chapter-title{font-size:clamp(2rem,3.6vw,3.25rem);font-weight:300;line-height:1.05;color:var(--display)}
 .chapter-title i{font-style:italic}
-.chapter-intro{font-size:var(--text-lead);line-height:1.35;color:var(--muted);max-width:46rem}
+.chapter-intro{font-size:var(--text-lead);line-height:1.35;color:var(--secondary);max-width:46rem}
 
 .reveal-up{will-change:transform,opacity}
 
@@ -355,7 +397,7 @@ i,em{font-style:italic}
 .principle{
   background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);overflow:hidden;
 }
-.principle[data-open="true"]{border-color:var(--accent)}
+.principle[data-open="true"]{border-color:var(--accent-deep)}
 .principle > button{
   width:100%;display:flex;align-items:flex-start;gap:1rem;text-align:left;
   background:none;border:0;cursor:pointer;padding:1.5rem;
@@ -366,9 +408,10 @@ i,em{font-style:italic}
 }
 .principle .p-title{font-size:1.25rem;line-height:1.2;flex:1}
 .principle .p-claim{display:block;font-size:.9375rem;line-height:1.35;color:var(--muted);margin-top:.375rem}
+.principle .p-title{color:var(--foreground)}
 .principle .chev{flex:none;width:1.75rem;height:1.75rem;border-radius:9999px;border:1px solid var(--hairline);
   display:grid;place-items:center;transition:transform .3s cubic-bezier(.22,1,.36,1),background .2s}
-.principle[data-open="true"] .chev{transform:rotate(90deg);background:var(--accent);border-color:var(--accent)}
+.principle[data-open="true"] .chev{transform:rotate(90deg);background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
 .principle .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.22,1,.36,1)}
 .principle[data-open="true"] .panel{grid-template-rows:1fr}
 .principle .panel > div{overflow:hidden}
@@ -377,7 +420,7 @@ i,em{font-style:italic}
 .bullets li{display:flex;gap:.75rem;font-size:1rem;line-height:1.4}
 .bullets li::before{content:"";flex:none;width:.4375rem;height:.4375rem;border-radius:9999px;background:var(--accent);margin-top:.5rem}
 .note{
-  font-size:.9375rem;line-height:1.4;background:rgba(0,0,0,.035);border-left:2px solid var(--accent);
+  font-size:.9375rem;line-height:1.4;color:var(--secondary);background:rgba(201,208,214,.05);border-left:2px solid var(--accent);
   padding:.875rem 1rem;border-radius:0 .5rem .5rem 0;
 }
 
@@ -386,20 +429,27 @@ i,em{font-style:italic}
 .module{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);overflow:hidden}
 .module-head{display:flex;align-items:center;gap:1.25rem;padding:1.5rem;flex-wrap:wrap}
 .module-abbr{
-  flex:none;min-width:5.5rem;height:3.125rem;padding:0 1rem;border-radius:9999px;background:var(--accent);
+  flex:none;min-width:5.5rem;height:3.125rem;padding:0 1rem;border-radius:9999px;
+  background:var(--accent);color:var(--on-accent);
   display:grid;place-items:center;font-size:1.0625rem;letter-spacing:.02em;
 }
-.module-abbr[data-tone="ghost"]{background:transparent;border:1px solid var(--foreground)}
+/* Bereichsfarbe statt Dekoration: die Kennung sagt, aus welchem Kapitel ein
+   Modul stammt — Gold für die Grundtaktiken, Garden Green für die örtlichen
+   Besonderheiten, Fresh Mint für die Spezialisierungen. Dunkle Schrift auf
+   allen dreien (5.0 / 15.8 / 8.8 : 1). */
+.module-abbr[data-tone="garden"]{background:var(--garden)}
+.module-abbr[data-tone="mint"]{background:var(--mint)}
 .module-titles{flex:1;min-width:12rem}
 .module-titles h3{font-size:1.5rem;font-weight:300;line-height:1.15}
 .module-titles p{font-size:.9375rem;color:var(--muted);line-height:1.35;margin-top:.25rem}
+.module-titles h3{color:var(--foreground)}
 .module-toggle{
   flex:none;height:2.75rem;padding:0 1.25rem;border-radius:9999px;border:1px solid var(--hairline);
-  background:transparent;cursor:pointer;font-size:.9375rem;display:flex;align-items:center;gap:.5rem;
+  background:transparent;color:var(--secondary);cursor:pointer;font-size:.9375rem;display:flex;align-items:center;gap:.5rem;
 }
 .module-toggle .chev{transition:transform .3s cubic-bezier(.22,1,.36,1)}
 .module[data-open="true"] .module-toggle .chev{transform:rotate(90deg)}
-.module[data-open="true"]{border-color:var(--accent)}
+.module[data-open="true"]{border-color:var(--accent-deep)}
 .module .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .42s cubic-bezier(.22,1,.36,1)}
 .module[data-open="true"] .panel{grid-template-rows:1fr}
 .module .panel > div{overflow:hidden}
@@ -407,9 +457,9 @@ i,em{font-style:italic}
 .tabs{display:flex;gap:.375rem;flex-wrap:wrap;padding:1.25rem 1.5rem;border-bottom:1px solid var(--hairline)}
 .tabs button{
   height:2.375rem;padding:0 1rem;border-radius:9999px;border:1px solid var(--hairline);
-  background:transparent;cursor:pointer;font-size:.875rem;font-family:"Mulish",sans-serif;
+  background:transparent;color:var(--muted);cursor:pointer;font-size:.875rem;font-family:"Mulish",sans-serif;
 }
-.tabs button[aria-selected="true"]{background:var(--foreground);color:var(--surface);border-color:var(--foreground)}
+.tabs button[aria-selected="true"]{background:var(--foreground);color:var(--background);border-color:var(--foreground)}
 .tabpanel{padding:1.5rem;display:none;flex-direction:column;gap:1.25rem}
 .tabpanel[data-active="true"]{display:flex}
 .tabpanel h4{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
@@ -419,7 +469,7 @@ i,em{font-style:italic}
 .steps li::before{
   content:counter(s,decimal-leading-zero);flex:none;width:2.25rem;height:2.25rem;border-radius:9999px;
   border:1px solid var(--hairline);display:grid;place-items:center;
-  font-family:"Mulish",sans-serif;font-size:.8125rem;
+  font-family:"Mulish",sans-serif;font-size:.8125rem;color:var(--muted);
 }
 .steps .st{font-size:1.0625rem;line-height:1.25}
 .steps .sd{font-size:.9375rem;line-height:1.4;color:var(--muted);margin-top:.2rem}
@@ -427,35 +477,38 @@ i,em{font-style:italic}
 .roles{display:grid;gap:.5rem}
 @media (min-width:768px){ .roles{grid-template-columns:repeat(2,1fr)} }
 .role{border:1px solid var(--hairline);border-radius:.75rem;padding:1rem}
-.role b{font-weight:400;display:block;margin-bottom:.25rem}
+.role b{font-weight:400;display:block;margin-bottom:.25rem;color:var(--foreground)}
 .role span{font-size:.9375rem;line-height:1.4;color:var(--muted)}
 
-.errors li::before{background:#ff4d4d}
+/* Electric Lime ist das Warnsignal des Handbuchs: Fehlerbilder und zwingende
+   Absprachen. Signal Green bleibt „richtig / erledigt“ — die beiden Grüntöne
+   sind in Helligkeit und Sättigung weit genug auseinander. */
+.errors li::before{background:var(--warn)}
 .merksatz{
-  display:flex;gap:1rem;align-items:flex-start;background:var(--foreground);color:var(--surface);
+  display:flex;gap:1rem;align-items:flex-start;background:var(--moss);color:var(--ice);
   border-radius:var(--radius-card);padding:1.25rem 1.5rem;font-size:1.125rem;line-height:1.3;font-style:italic;
 }
-.merksatz::before{content:"„";font-size:2.25rem;line-height:1;color:var(--accent);font-style:normal;transform:translateY(.35rem)}
+.merksatz::before{content:"„";font-size:2.25rem;line-height:1;color:var(--mint);font-style:normal;transform:translateY(.35rem)}
 
 .mod-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   padding:1.25rem 1.5rem;border-top:1px solid var(--hairline);flex-wrap:wrap}
 .check{display:flex;align-items:center;gap:.75rem;cursor:pointer;font-size:.9375rem}
 .check input{position:absolute;opacity:0;width:0;height:0}
 .check .box{
-  width:1.5rem;height:1.5rem;border-radius:.4375rem;border:1px solid var(--hairline-strong);
+  width:1.5rem;height:1.5rem;border-radius:.4375rem;border:1px solid var(--steel);
   display:grid;place-items:center;transition:background .2s,border-color .2s;flex:none;
 }
 .check .box svg{opacity:0;transition:opacity .18s}
-.check input:checked + .box{background:var(--accent);border-color:var(--accent)}
+.check input:checked + .box{background:var(--ok);border-color:var(--ok)}
 .check input:checked + .box svg{opacity:1}
-.check input:focus-visible + .box{outline:2px solid var(--foreground);outline-offset:2px}
+.check input:focus-visible + .box{outline:2px solid var(--accent);outline-offset:2px}
 
 /* Glossar */
 .glossar{display:grid;gap:.5rem}
 @media (min-width:768px){ .glossar{grid-template-columns:repeat(2,1fr)} }
 @media (min-width:1280px){ .glossar{grid-template-columns:repeat(3,1fr)} }
 .gloss{background:var(--surface);border:1px solid var(--hairline);border-radius:.75rem;padding:1rem 1.25rem}
-.gloss b{font-weight:400;font-style:italic;display:block}
+.gloss b{font-weight:400;font-style:italic;display:block;color:var(--accent-soft)}
 .gloss span{font-size:.9375rem;line-height:1.4;color:var(--muted)}
 
 /* Wissenscheck */
@@ -463,28 +516,29 @@ i,em{font-style:italic}
 .quiz-meta{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem}
 .quiz-meta .topic{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
 .quiz-meta .score{font-size:.9375rem}
-.quiz-q{font-size:1.375rem;line-height:1.25;margin-bottom:1.25rem}
+.quiz-q{font-size:1.375rem;line-height:1.25;margin-bottom:1.25rem;color:var(--foreground)}
 .quiz-answers{display:flex;flex-direction:column;gap:.5rem}
 .quiz-answers button{
   text-align:left;background:transparent;border:1px solid var(--hairline);border-radius:.75rem;
-  padding:.875rem 1.125rem;cursor:pointer;font-size:1rem;line-height:1.35;display:flex;gap:.75rem;align-items:flex-start;
+  padding:.875rem 1.125rem;color:var(--secondary);cursor:pointer;font-size:1rem;line-height:1.35;display:flex;gap:.75rem;align-items:flex-start;
 }
 .quiz-answers button::before{content:attr(data-key);font-family:"Mulish",sans-serif;font-size:.75rem;color:var(--muted);
   border:1px solid var(--hairline);border-radius:9999px;width:1.5rem;height:1.5rem;display:grid;place-items:center;flex:none}
-.quiz-answers button:hover:not(:disabled){border-color:var(--hairline-strong)}
-.quiz-answers button[data-state="right"]{border-color:var(--accent);background:rgba(0,255,153,.14)}
-.quiz-answers button[data-state="wrong"]{border-color:#ff4d4d;background:rgba(255,77,77,.1)}
-.quiz-why{margin-top:1.125rem;font-size:.9375rem;line-height:1.45}
+.quiz-answers button:hover:not(:disabled){border-color:var(--steel);color:var(--foreground)}
+.quiz-answers button[data-state="right"]{border-color:var(--ok);background:rgba(37,199,122,.16);color:var(--foreground)}
+.quiz-answers button[data-state="wrong"]{border-color:var(--warn);background:rgba(199,255,46,.12);color:var(--foreground)}
+.quiz-why{margin-top:1.125rem;font-size:.9375rem;line-height:1.45;color:var(--secondary)}
 .quiz-why[hidden]{display:none}
 .quiz-next{margin-top:1.25rem;height:2.9375rem;padding:0 1.5rem;border-radius:9999px;background:var(--accent);
-  border:1px solid var(--hairline);cursor:pointer;font-size:1rem}
+  color:var(--on-accent);border:1px solid var(--accent-deep);cursor:pointer;font-size:1rem}
 
 /* Fußzeile */
-.site-footer{background:var(--background);border-top:1px solid var(--hairline);margin-top:3rem;padding:2.5rem 0 3rem;font-size:.9375rem;color:var(--muted)}
+.site-footer{background:var(--ink-deep);border-top:1px solid var(--hairline);margin-top:3rem;padding:2.5rem 0 3rem;font-size:.9375rem;color:var(--muted)}
 .site-footer .row{display:flex;gap:1.5rem;justify-content:space-between;flex-wrap:wrap;align-items:flex-start}
 .disclaimer{max-width:40rem;line-height:1.45}
 .to-top{height:2.75rem;padding:0 1.25rem;border-radius:9999px;border:1px solid var(--hairline);background:var(--surface);
   cursor:pointer;font-size:.9375rem;color:var(--foreground)}
+.scroll-hint span{background:var(--steel)}
 
 @media (max-width:600px){
   .module-head{flex-direction:column;align-items:flex-start;gap:.875rem}
@@ -493,9 +547,25 @@ i,em{font-style:italic}
   .quiz{padding:1.25rem}
 }
 
+/* Gedruckt kehrt sich die Seite um: Mist White als Papier, Sumi Ink als
+   Schrift, Bronze statt Gold. Ein dunkles Handbuch auf Papier wäre eine
+   Tonerkatastrophe — und die Bereichsfarben tragen auf Weiß nicht. */
 @media print{
+  :root{
+    --background:#ffffff; --surface:#ffffff; --surface-2:#ffffff; --ink-deep:#ffffff;
+    --foreground:#151515; --secondary:#31363B; --muted:#55595E; --on-accent:#151515;
+    --hairline:rgba(0,0,0,.2); --hairline-strong:rgba(0,0,0,.35); --steel:#55595E;
+    --accent:#8A6E2F; --accent-soft:#6E5526; --accent-deep:#8A6E2F;
+    --ok:#151515; --warn:#151515; --garden:#EEF1EA; --mint:#EEF1EA;
+    --moss:#EEF1EA; --ice:#151515; --display:#151515;
+  }
   #preloader,#field,.site-header,#menu,.search-pill,.progress-pill,.scroll-hint,.quiz,.to-top{display:none!important}
-  body{background:#fff}
+  body{background:#fff;color:#151515}
+  .paper{background:none}
+  .merksatz{border-left:3px solid #8A6E2F}
+  .module-abbr{border:1px solid rgba(0,0,0,.35)}
+  .tabs button[aria-selected="true"]{background:#151515;color:#fff}
+  .errors li::before,.bullets li::before{background:#151515}
   .hero{height:auto;display:block;padding:0 0 2rem}
   .headline-wrap,.copy-rule,.lead,.body-copy,.stats{position:static!important;width:auto!important}
   .module .panel,.principle .panel{grid-template-rows:1fr!important}
@@ -592,7 +662,7 @@ i,em{font-style:italic}
       <li class="stat-card" data-accent="true" data-anim="stat"><p class="val">10</p><p class="lbl">Grundprinzipien</p></li>
       <li class="stat-card" data-anim="stat"><p class="val">4</p><p class="lbl">Grundtaktiken</p></li>
       <li class="stat-card" data-anim="stat"><p class="val">2</p><p class="lbl">Besonderheiten</p></li>
-      <li class="stat-card" data-accent="true" data-anim="stat"><p class="val">3</p><p class="lbl">Spezialisierungen</p></li>
+      <li class="stat-card" data-accent="true" data-anim="stat"><p class="val">3</p><p class="lbl">Spezialisie&shy;rungen</p></li>
     </ul>
 
     <form class="search-pill" id="search" role="search" data-anim="request" autocomplete="off">
@@ -978,7 +1048,7 @@ const HANDBUCH = {
     intro:"Hier kommt keine neue Taktik hinzu. BuD, Notintervention, Messer-Intervention und Notzugriff gelten unverändert. Was sich ändert, sind einzelne Verhaltensweisen, weil die Örtlichkeit eigene Gefahren, eigene Zwangspunkte und eigene Zuständigkeiten mitbringt. Diese Abweichungen werden vorher besprochen — im Objekt ist es zu spät.",
     modules:[
       {
-        id:"oepnv", abbr:"ÖPNV", tone:"ghost", title:"Öffentlicher Personenverkehr",
+        id:"oepnv", abbr:"ÖPNV", tone:"garden", title:"Öffentlicher Personenverkehr",
         subtitle:"Bus, Straßenbahn, U- und S-Bahn, Bahnhöfe und Tunnel — enge Räume, fremde Technik, viele Unbeteiligte.",
         merksatz:"Kein Fuß ins Gleis ohne quittierte Abschaltung.",
         tabs:[
@@ -1029,7 +1099,7 @@ const HANDBUCH = {
         ]
       },
       {
-        id:"wasser", abbr:"Wasser", tone:"ghost", title:"Wasser und Uferbereiche",
+        id:"wasser", abbr:"Wasser", tone:"garden", title:"Wasser und Uferbereiche",
         subtitle:"Boot, Steg, Ufer, Hafen und Schiff — eingeschränkte Bewegung, Kälte und eine Ausstattung, die im Wasser zur Gefahr wird.",
         merksatz:"Wer schwimmt, kämpft nicht. Erst Auftrieb, dann Auftrag.",
         tabs:[
@@ -1090,7 +1160,7 @@ const HANDBUCH = {
     intro:"Spezialisierungen sind keine eigenen Taktiken, sondern Zusatzqualifikationen innerhalb derselben Verfahren. Jeder Spezialist ist zuerst Einsatzkraft der Einheit und übernimmt seine Zusatzaufgabe dann, wenn die Lage es zulässt. Die Einheit muss jede Spezialistenaufgabe zumindest in ihren Grundzügen kennen — der Spezialist kann ausfallen.",
     modules:[
       {
-        id:"medic", abbr:"MEDIC", title:"Taktische Notfallversorgung",
+        id:"medic", abbr:"MEDIC", tone:"mint", title:"Taktische Notfallversorgung",
         subtitle:"Lebensrettende Versorgung im Wirkbereich, Ausbildung des Teams in Selbst- und Kameradenhilfe, geordnete Übergabe an den Rettungsdienst.",
         merksatz:"Erst die Lage, dann die Wunde — aber die kritische Blutung wartet nicht.",
         tabs:[
@@ -1130,7 +1200,7 @@ const HANDBUCH = {
         ]
       },
       {
-        id:"breaching", abbr:"Breaching", title:"Zugangstechnik",
+        id:"breaching", abbr:"Breaching", tone:"mint", title:"Zugangstechnik",
         subtitle:"Herstellen von Zugängen — mechanisch, hydraulisch, ballistisch, thermisch oder mit gesonderten Verfahren.",
         merksatz:"Erst probieren, dann brechen — und immer einen zweiten Weg.",
         tabs:[
@@ -1174,7 +1244,7 @@ const HANDBUCH = {
         ]
       },
       {
-        id:"sicherungsschuetze", abbr:"Sicherung", title:"Sicherungsschütze",
+        id:"sicherungsschuetze", abbr:"Sicherung", tone:"mint", title:"Sicherungsschütze",
         subtitle:"Beobachtung, Lagemeldung und — als Ausnahme — präziser Schusseinsatz aus vorbereiteter Stellung.",
         merksatz:"Das Auge der Einheit: der Schuss ist die Ausnahme, die Meldung die Regel.",
         tabs:[
@@ -1437,11 +1507,14 @@ const FIELD = {
   cellSize:9, dotScale:.72, softness:0, gain:1.9, gamma:.62,
   mirror:false, tilt:.24, inkSpread:2.5, revealBand:.28, maxDpr:2, scrubSteps:48
 };
+/* Die Rampe ist die Goldfamilie aus den Tokens — hell oben links, Bronze unten
+   rechts, auf Carbon Black. Damit trägt das Zeichen im Feld dieselbe Farbe wie
+   das Abzeichen im Kopf, statt eine zweite Leitfarbe aufzumachen. */
 const INK = {
-  bg:[0.941,0.953,0.957],
-  light:[0.682,1.000,0.000],
-  mid:[0.000,0.741,0.443],
-  deep:[0.000,0.459,0.282]
+  bg:   [0.067, 0.078, 0.094],  /* #111418 Carbon Black */
+  light:[0.894, 0.784, 0.494],  /* #E4C87E Hellgold     */
+  mid:  [0.788, 0.663, 0.380],  /* #C9A961 Gold         */
+  deep: [0.541, 0.431, 0.184]   /* #8A6E2F Bronze       */
 };
 
 /* ---- Quelle: das Einheitszeichen, gezeichnet ---------------------------- */
@@ -1846,7 +1919,7 @@ onReveal(() => {
    6 · KAPITEL AUFBAUEN
    ========================================================================== */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const CHECK_SVG = '<svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.6 11 1.6"/></svg>';
+const CHECK_SVG = '<svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.6 11 1.6"/></svg>';
 const CHEV_SVG  = '<svg class="chev-i" viewBox="0 0 9 7.364" width="9" height="8" fill="none" stroke="currentColor" stroke-width="1"><path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/></svg>';
 
 function head(sec){
@@ -2236,12 +2309,12 @@ function paintProgress(){
 const LOGO_SRC = "";
 const LOGO_FALLBACK = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#0f1211"/>
+  <rect width="100" height="100" fill="#0A0A0A"/>
   <g transform="rotate(-6 50 50)">
-    <rect x="9" y="28" width="82" height="44" rx="5" fill="#000" stroke="#e9efec" stroke-width="2.5"/>
+    <rect x="9" y="28" width="82" height="44" rx="5" fill="#0A0A0A" stroke="#C9A961" stroke-width="2.5"/>
     <text x="50" y="51.5" text-anchor="middle" dominant-baseline="middle"
           font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="25"
-          letter-spacing="0.5" fill="#f2f6f4">ÜKDO</text>
+          letter-spacing="0.5" fill="#E4C87E">ÜKDO</text>
   </g>
 </svg>`);
 document.getElementById("brand-mark").src = LOGO_SRC || LOGO_FALLBACK;
