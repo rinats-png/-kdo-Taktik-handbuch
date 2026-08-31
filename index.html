@@ -1,0 +1,2269 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ÜKDO · Taktikhandbuch</title>
+<meta name="description" content="Interaktives Taktikhandbuch des Überfallkommandos: Grundprinzipien, Grundtaktiken (BuD, NIT, Messer-Intervention, Notzugriff), örtliche Besonderheiten (ÖPNV, Wasser) und Spezialisierungen (MEDIC, Breaching, Sicherungsschütze)." />
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,1&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap" />
+<style>
+/* ==========================================================================
+   Design-Tokens — übernommen aus dem Stackside-Designsystem (globals.css).
+   Eine Grünfamilie, ein Papierweiß, eine Haarlinie. Bewusst hell: das
+   Halbton-Feld ist als Tinte auf Papier gebaut.
+   ========================================================================== */
+:root{
+  --background:#f0f3f4;
+  --foreground:#000000;
+  --accent:#00ff99;
+  --surface:#fdffff;
+  --hairline:rgba(0,0,0,.1);
+  --hairline-strong:rgba(0,0,0,.2);
+  --muted:rgba(0,0,0,.55);
+
+  --radius-card:1rem;
+
+  /* Preloader */
+  --preloader-ground:#000000;
+  --preloader-veil:var(--accent);
+  --preloader-dial-from:var(--accent);
+  --preloader-dial-to:#48c7c9;
+
+  /* Halbton-Feld */
+  --halftone-bg:#f0f3f4;
+  --halftone-ink-light:#aeff00;
+  --halftone-ink-mid:#00bd71;
+  --halftone-ink-deep:#007548;
+
+  /* Typo-Skala — mobiles Ende */
+  --size-display:2.5rem;
+  --size-stat:1.5rem;
+  --size-lead:1.25rem;
+  --size-body:1rem;
+  --size-menu:2rem;
+
+  --text-display:var(--size-display);
+  --text-stat:var(--size-stat);
+  --text-lead:var(--size-lead);
+  --text-body:var(--size-body);
+  --text-menu:var(--size-menu);
+}
+
+/* Der Rahmen des Entwurfs: 1440x800. Ab 1024px folgt die Wurzel-Schriftgröße
+   dem Viewport, damit die rem-Maße die Proportionen halten. */
+@media (min-width:1024px){
+  :root{
+    --size-display:5rem;
+    --size-stat:2rem;
+    --size-lead:1.5rem;
+    --size-body:1rem;
+  }
+  html{ font-size:min(1.111111vw, 2vh); }
+}
+
+*{margin:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{min-height:100%}
+body{
+  background:var(--background);
+  color:var(--foreground);
+  font-family:"General Sans","Inter",system-ui,sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.is-locked{overflow:hidden}
+img,svg,video,canvas{display:block;max-width:100%}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none;padding:0}
+i,em{font-style:italic}
+:focus-visible{outline:2px solid var(--foreground);outline-offset:3px;border-radius:.25rem}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ==========================================================================
+   Halbton-Feld — fixierter Hintergrund, WebGL2
+   ========================================================================== */
+#field{position:fixed;inset:0;z-index:-10;background:var(--halftone-bg)}
+#field canvas{position:absolute;inset:0;width:100%;height:100%;background:var(--halftone-bg)}
+
+/* Papierschleier: hält den Text über dem Punktfeld lesbar, ohne die Tinte
+   auszubleichen. */
+#field::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(240,243,244,.22) 0%,rgba(240,243,244,.04) 45%,rgba(240,243,244,.28) 100%);
+}
+
+/* ==========================================================================
+   Preloader
+   ========================================================================== */
+#preloader{position:fixed;inset:0;z-index:100;overflow:hidden}
+#preloader .curtain{position:absolute;inset:0;will-change:transform}
+#preloader .veil{background:var(--preloader-veil)}
+#preloader .ground{background:var(--preloader-ground)}
+.dial{position:relative;display:grid;place-items:center;width:100%;height:100%}
+.dial svg{position:absolute;width:36.9375rem;height:36.9375rem;color:#fff}
+.dial .disc{
+  width:18.6875rem;height:18.6875rem;border-radius:9999px;
+  background:conic-gradient(from 180deg,var(--preloader-dial-from),var(--preloader-dial-to));
+}
+.dial .count{
+  position:absolute;top:calc(50% + 12.6875rem);
+  font-size:var(--text-stat);font-style:italic;line-height:1;color:#fff;
+}
+@media (max-width:1023px){
+  .dial svg{width:min(80vw,26rem);height:min(80vw,26rem)}
+  .dial .disc{width:min(40vw,13rem);height:min(40vw,13rem)}
+  .dial .count{top:calc(50% + min(44vw,14.5rem));font-size:2rem}
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+.site-header{
+  position:fixed;left:.625rem;right:.625rem;top:.625rem;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{
+  display:flex;align-items:center;gap:.625rem;
+  height:3.125rem;padding-right:1.25rem;border-radius:9999px;
+  background:var(--surface);border:1px solid var(--hairline);
+}
+.brand-disc{
+  width:3rem;height:3rem;margin:-1px 0 -1px -1px;border-radius:9999px;
+  background:var(--surface);border:1px solid var(--hairline);
+  display:grid;place-items:center;flex:none;overflow:hidden;
+}
+.brand-disc .mark{width:1.75rem;height:1.75rem;border-radius:9999px;object-fit:cover}
+.brand-word{font-size:var(--text-body);line-height:1;white-space:nowrap}
+.brand-word b{font-weight:400}
+.brand-word i{font-style:italic}
+
+.nav-pill{
+  position:absolute;left:50%;transform:translateX(-50%);
+  height:3.125rem;display:flex;align-items:center;gap:2rem;
+  padding:0 3rem;border-radius:9999px;
+  background:var(--surface);border:1px solid var(--hairline);
+  font-size:var(--text-body);white-space:nowrap;
+}
+.nav-pill a{position:relative;transition:opacity .2s}
+.nav-pill a[data-active="true"]::after{
+  content:"";position:absolute;left:0;right:0;bottom:-.4rem;height:2px;border-radius:2px;background:var(--accent);
+}
+.nav-pill .dot{width:.25rem;height:.25rem;border-radius:9999px;background:var(--hairline-strong);flex:none}
+
+.header-cta{display:flex;align-items:center;gap:.25rem}
+.cta-btn{
+  height:3.125rem;width:9.1875rem;border-radius:9999px;
+  background:var(--accent);border:1px solid var(--hairline);
+  display:grid;place-items:center;font-size:var(--text-body);cursor:pointer;
+}
+.cta-twin{
+  width:3.125rem;height:3.125rem;border-radius:9999px;
+  background:var(--accent);border:1px solid var(--hairline);
+  display:grid;place-items:center;flex:none;
+}
+.cta-twin span{
+  width:1.875rem;height:1.875rem;border-radius:9999px;background:var(--surface);
+  display:grid;place-items:center;
+}
+.cta-twin svg{width:.5rem;height:.41rem}
+
+.burger{
+  display:none;width:3.125rem;height:3.125rem;border-radius:9999px;
+  background:var(--accent);border:1px solid var(--hairline);
+  cursor:pointer;place-items:center;gap:.375rem;flex-direction:column;
+}
+.burger i{display:block;width:1.125rem;height:1px;background:var(--foreground)}
+
+/* Mobiles Menü — schwarzer Vorhang, gleiche Kurve wie der Preloader */
+#menu{position:fixed;inset:0;z-index:90;background:var(--preloader-ground);color:#fff;
+  display:flex;flex-direction:column;justify-content:center;gap:1.25rem;padding:6rem 1.25rem 2.5rem;will-change:transform}
+#menu[hidden]{display:none}
+#menu a{font-size:var(--text-menu);line-height:1.1}
+#menu .menu-cta{margin-top:1.5rem;align-self:flex-start;background:var(--accent);color:var(--foreground);
+  border-radius:9999px;padding:.875rem 1.75rem;font-size:1.125rem}
+#menu .menu-close{position:absolute;top:1.25rem;right:1.25rem;width:3rem;height:3rem;border-radius:9999px;
+  background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;cursor:pointer;font-size:1.25rem}
+
+/* ==========================================================================
+   Hero — der 1440x800-Rahmen
+   ========================================================================== */
+.hero{position:relative;display:flex;flex-direction:column;gap:2.5rem;padding:5rem 1.25rem 2.5rem}
+
+.headline-wrap{position:relative;font-size:var(--text-display)}
+.headline{font-size:1em;font-weight:300;line-height:1;position:relative;z-index:1}
+.headline i{font-style:italic}
+.headline .wrd-hold{display:inline-block;white-space:nowrap}
+.headline .ltr{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+.headline-bar{
+  position:absolute;z-index:0;bottom:-.2em;left:-.125em;height:.45em;width:4.025em;
+  border-radius:9999px;background:var(--accent);transform-origin:left;
+}
+
+.copy{position:relative;display:flex;gap:2rem}
+.copy-rule{width:1px;background:var(--foreground);transform-origin:top;flex:none}
+.copy-text{display:flex;flex-direction:column;gap:1.25rem}
+.lead{font-size:var(--text-lead);line-height:1.2}
+.body-copy{font-size:var(--text-body);line-height:1.2}
+.wrd{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat-card{
+  padding:1.5rem;border-radius:var(--radius-card);background:var(--surface);
+  border:1px solid var(--hairline);display:flex;flex-direction:column;gap:.75rem;
+}
+.stat-card[data-accent="true"]{border-color:var(--accent)}
+.stat-card .val{font-size:var(--text-stat);font-style:italic;line-height:1}
+.stat-card .lbl{font-family:"Mulish",system-ui,sans-serif;font-size:var(--text-body);line-height:1.2}
+
+/* Suchpille (im Entwurf die Request-Form) */
+.search-pill{
+  position:relative;background:var(--foreground);border-radius:9999px;
+  display:flex;flex-direction:row;align-items:center;gap:.6875rem;
+  padding:.125rem .125rem .125rem 2rem;
+}
+.search-pill input{
+  width:14rem;background:transparent;border:0;outline:none;
+  font-size:var(--text-body);color:var(--surface);
+}
+.search-pill input::placeholder{color:var(--surface);opacity:.55}
+.search-submit{
+  height:2.9375rem;border-radius:9999px;background:var(--accent);border:0;
+  padding:.875rem 1.5rem;display:flex;align-items:center;gap:.5rem;
+  font-size:var(--text-body);cursor:pointer;white-space:nowrap;
+}
+.search-submit .bead{width:.5625rem;height:.5625rem;border-radius:9999px;border:1px solid var(--foreground);background:var(--surface)}
+
+.search-results{
+  position:absolute;left:0;bottom:calc(100% + .625rem);width:min(30rem,calc(100vw - 2.5rem));
+  background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);
+  box-shadow:0 1.5rem 3rem rgba(0,0,0,.12);overflow:hidden;z-index:30;max-height:22rem;overflow-y:auto;
+}
+.search-results[hidden]{display:none}
+.search-results li a,.search-results li button{
+  display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  padding:.75rem 1rem;border-bottom:1px solid var(--hairline);
+}
+.search-results li:last-child a,.search-results li:last-child button{border-bottom:0}
+.search-results .hit-sec{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.search-results .hit-title{font-size:var(--text-body);line-height:1.3}
+.search-results li [aria-selected="true"],.search-results li a:hover,.search-results li button:hover{background:rgba(0,0,0,.04)}
+.search-empty{padding:.875rem 1rem;font-size:var(--text-body);color:var(--muted)}
+
+/* Fortschrittspille (im Entwurf die Trust-Pille) */
+.progress-pill{
+  height:3.1875rem;display:flex;align-items:center;justify-content:space-between;
+  border-radius:9999px;border:1px solid var(--hairline);background:var(--surface);
+  padding:.125rem .125rem .125rem 1.5rem;gap:1rem;
+}
+.progress-pill .txt{font-size:var(--text-body);line-height:1.1;white-space:nowrap}
+.progress-pill .txt b{font-weight:400;font-style:italic}
+.progress-track{flex:1;height:.375rem;border-radius:9999px;background:var(--hairline);overflow:hidden;min-width:3rem}
+.progress-track i{display:block;height:100%;width:0%;background:var(--accent);border-radius:9999px;transition:width .45s cubic-bezier(.22,1,.36,1)}
+.progress-reset{
+  height:2.9375rem;padding:0 1.25rem;border-radius:9999px;background:var(--foreground);color:var(--surface);
+  border:0;cursor:pointer;font-size:.875rem;white-space:nowrap;flex:none;
+}
+
+.scroll-hint{display:none}
+
+/* Desktop-Rahmen: absolute Koordinaten des 1440x800-Entwurfs */
+@media (min-width:1024px){
+  .hero{display:block;height:100vh;padding:0;gap:0}
+  .headline-wrap{position:absolute;left:1.875rem;top:7.25rem;width:49.8125rem}
+  .copy{display:block}
+  .copy-rule{position:absolute;left:1.875rem;top:24.3125rem;height:15rem}
+  .copy-text{display:block}
+  .lead{position:absolute;left:3.875rem;top:24.3125rem;width:25.6875rem}
+  .body-copy{position:absolute;left:3.875rem;top:34.5625rem;width:25.6875rem}
+  .stats{position:absolute;right:1.875rem;top:24.3125rem}
+  .stat-card{width:11.875rem}
+  .search-pill{position:absolute;bottom:1.875rem;left:1.875rem}
+  .search-pill input{width:16rem}
+  .progress-pill{position:absolute;bottom:1.875rem;right:1.875rem;width:24.25rem}
+  .scroll-hint{
+    display:flex;position:absolute;left:50%;bottom:2.5rem;transform:translateX(-50%);
+    align-items:center;gap:.5rem;font-size:.8125rem;color:var(--muted);
+    font-family:"Mulish",sans-serif;text-transform:uppercase;letter-spacing:.12em;
+  }
+  .scroll-hint span{display:block;width:1px;height:1.75rem;background:var(--hairline-strong)}
+}
+
+@media (max-width:1023px){
+  /* Auf schmalen Schirmen zoomt das Feld das Zeichen stark heran; ohne einen
+     kräftigeren Schleier steht der Text im Raster statt darauf. */
+  #field::after{background:linear-gradient(180deg,rgba(240,243,244,.74) 0%,rgba(240,243,244,.8) 55%,rgba(240,243,244,.9) 100%)}
+  .hero{hyphens:auto}
+  .stats{min-width:0}
+  .stat-card{padding:1.125rem;min-width:0}
+  .stat-card .lbl{hyphens:auto;overflow-wrap:break-word}
+  .copy{align-items:stretch}
+  .site-header .nav-pill{display:none}
+  .site-header .header-cta{display:none}
+  .burger{display:grid}
+  .copy-rule{width:1px;align-self:stretch}
+  .search-pill{
+    flex-direction:column;align-items:stretch;gap:.5rem;border-radius:var(--radius-card);padding:.5rem;
+  }
+  .search-pill input{width:100%;padding:.875rem 1rem;background:rgba(255,255,255,.07);border-radius:.75rem}
+  .search-submit{justify-content:center}
+  .search-results{bottom:auto;top:calc(100% + .5rem)}
+  .progress-pill{flex-wrap:wrap;height:auto;border-radius:var(--radius-card);padding:1rem;gap:.75rem}
+  .progress-reset{height:2.5rem}
+}
+
+/* ==========================================================================
+   Inhaltsbereiche — dieselbe Sprache wie der Hero, nur scrollend
+   ========================================================================== */
+.paper{
+  position:relative;
+  background:linear-gradient(180deg,
+    rgba(240,243,244,0) 0,
+    rgba(240,243,244,.88) 5rem,
+    var(--background) 11rem);
+}
+.shell{width:100%;max-width:90rem;margin:0 auto;padding:0 1.25rem}
+@media (min-width:1024px){ .shell{padding:0 1.875rem} }
+
+.chapter{padding:5rem 0 1rem;scroll-margin-top:5.5rem}
+.module,.principle,.gloss{scroll-margin-top:5.5rem}
+.chapter:last-of-type{padding-bottom:4rem}
+
+.chapter-head{display:flex;flex-direction:column;gap:1rem;margin-bottom:2.5rem;max-width:52rem}
+.kicker{
+  display:inline-flex;align-items:center;gap:.5rem;align-self:flex-start;
+  font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;
+  background:var(--surface);border:1px solid var(--hairline);border-radius:9999px;padding:.5rem 1rem;
+}
+.kicker::before{content:"";width:.4rem;height:.4rem;border-radius:9999px;background:var(--accent)}
+.chapter-title{font-size:clamp(2rem,3.6vw,3.25rem);font-weight:300;line-height:1.05}
+.chapter-title i{font-style:italic}
+.chapter-intro{font-size:var(--text-lead);line-height:1.35;color:var(--muted);max-width:46rem}
+
+.reveal-up{will-change:transform,opacity}
+
+/* Grundprinzipien — Akkordeon-Karten */
+.principles{display:grid;gap:.5rem}
+@media (min-width:768px){ .principles{grid-template-columns:1fr 1fr} }
+.principle{
+  background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);overflow:hidden;
+}
+.principle[data-open="true"]{border-color:var(--accent)}
+.principle > button{
+  width:100%;display:flex;align-items:flex-start;gap:1rem;text-align:left;
+  background:none;border:0;cursor:pointer;padding:1.5rem;
+}
+.principle .nr{
+  font-family:"Mulish",sans-serif;font-size:.75rem;letter-spacing:.08em;color:var(--muted);
+  border:1px solid var(--hairline);border-radius:9999px;padding:.25rem .625rem;flex:none;margin-top:.15rem;
+}
+.principle .p-title{font-size:1.25rem;line-height:1.2;flex:1}
+.principle .p-claim{display:block;font-size:.9375rem;line-height:1.35;color:var(--muted);margin-top:.375rem}
+.principle .chev{flex:none;width:1.75rem;height:1.75rem;border-radius:9999px;border:1px solid var(--hairline);
+  display:grid;place-items:center;transition:transform .3s cubic-bezier(.22,1,.36,1),background .2s}
+.principle[data-open="true"] .chev{transform:rotate(90deg);background:var(--accent);border-color:var(--accent)}
+.principle .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.22,1,.36,1)}
+.principle[data-open="true"] .panel{grid-template-rows:1fr}
+.principle .panel > div{overflow:hidden}
+.principle .panel-inner{padding:0 1.5rem 1.5rem;display:flex;flex-direction:column;gap:1rem}
+.bullets{display:flex;flex-direction:column;gap:.625rem}
+.bullets li{display:flex;gap:.75rem;font-size:1rem;line-height:1.4}
+.bullets li::before{content:"";flex:none;width:.4375rem;height:.4375rem;border-radius:9999px;background:var(--accent);margin-top:.5rem}
+.note{
+  font-size:.9375rem;line-height:1.4;background:rgba(0,0,0,.035);border-left:2px solid var(--accent);
+  padding:.875rem 1rem;border-radius:0 .5rem .5rem 0;
+}
+
+/* Module (Taktiken / Besonderheiten / Spezialisierungen) */
+.modules{display:flex;flex-direction:column;gap:1rem}
+.module{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);overflow:hidden}
+.module-head{display:flex;align-items:center;gap:1.25rem;padding:1.5rem;flex-wrap:wrap}
+.module-abbr{
+  flex:none;min-width:5.5rem;height:3.125rem;padding:0 1rem;border-radius:9999px;background:var(--accent);
+  display:grid;place-items:center;font-size:1.0625rem;letter-spacing:.02em;
+}
+.module-abbr[data-tone="ghost"]{background:transparent;border:1px solid var(--foreground)}
+.module-titles{flex:1;min-width:12rem}
+.module-titles h3{font-size:1.5rem;font-weight:300;line-height:1.15}
+.module-titles p{font-size:.9375rem;color:var(--muted);line-height:1.35;margin-top:.25rem}
+.module-toggle{
+  flex:none;height:2.75rem;padding:0 1.25rem;border-radius:9999px;border:1px solid var(--hairline);
+  background:transparent;cursor:pointer;font-size:.9375rem;display:flex;align-items:center;gap:.5rem;
+}
+.module-toggle .chev{transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.module[data-open="true"] .module-toggle .chev{transform:rotate(90deg)}
+.module[data-open="true"]{border-color:var(--accent)}
+.module .panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .42s cubic-bezier(.22,1,.36,1)}
+.module[data-open="true"] .panel{grid-template-rows:1fr}
+.module .panel > div{overflow:hidden}
+
+.tabs{display:flex;gap:.375rem;flex-wrap:wrap;padding:1.25rem 1.5rem;border-bottom:1px solid var(--hairline)}
+.tabs button{
+  height:2.375rem;padding:0 1rem;border-radius:9999px;border:1px solid var(--hairline);
+  background:transparent;cursor:pointer;font-size:.875rem;font-family:"Mulish",sans-serif;
+}
+.tabs button[aria-selected="true"]{background:var(--foreground);color:var(--surface);border-color:var(--foreground)}
+.tabpanel{padding:1.5rem;display:none;flex-direction:column;gap:1.25rem}
+.tabpanel[data-active="true"]{display:flex}
+.tabpanel h4{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:.75rem}
+.steps li{counter-increment:s;display:flex;gap:1rem;align-items:flex-start}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);flex:none;width:2.25rem;height:2.25rem;border-radius:9999px;
+  border:1px solid var(--hairline);display:grid;place-items:center;
+  font-family:"Mulish",sans-serif;font-size:.8125rem;
+}
+.steps .st{font-size:1.0625rem;line-height:1.25}
+.steps .sd{font-size:.9375rem;line-height:1.4;color:var(--muted);margin-top:.2rem}
+
+.roles{display:grid;gap:.5rem}
+@media (min-width:768px){ .roles{grid-template-columns:repeat(2,1fr)} }
+.role{border:1px solid var(--hairline);border-radius:.75rem;padding:1rem}
+.role b{font-weight:400;display:block;margin-bottom:.25rem}
+.role span{font-size:.9375rem;line-height:1.4;color:var(--muted)}
+
+.errors li::before{background:#ff4d4d}
+.merksatz{
+  display:flex;gap:1rem;align-items:flex-start;background:var(--foreground);color:var(--surface);
+  border-radius:var(--radius-card);padding:1.25rem 1.5rem;font-size:1.125rem;line-height:1.3;font-style:italic;
+}
+.merksatz::before{content:"„";font-size:2.25rem;line-height:1;color:var(--accent);font-style:normal;transform:translateY(.35rem)}
+
+.mod-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1.25rem 1.5rem;border-top:1px solid var(--hairline);flex-wrap:wrap}
+.check{display:flex;align-items:center;gap:.75rem;cursor:pointer;font-size:.9375rem}
+.check input{position:absolute;opacity:0;width:0;height:0}
+.check .box{
+  width:1.5rem;height:1.5rem;border-radius:.4375rem;border:1px solid var(--hairline-strong);
+  display:grid;place-items:center;transition:background .2s,border-color .2s;flex:none;
+}
+.check .box svg{opacity:0;transition:opacity .18s}
+.check input:checked + .box{background:var(--accent);border-color:var(--accent)}
+.check input:checked + .box svg{opacity:1}
+.check input:focus-visible + .box{outline:2px solid var(--foreground);outline-offset:2px}
+
+/* Glossar */
+.glossar{display:grid;gap:.5rem}
+@media (min-width:768px){ .glossar{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:1280px){ .glossar{grid-template-columns:repeat(3,1fr)} }
+.gloss{background:var(--surface);border:1px solid var(--hairline);border-radius:.75rem;padding:1rem 1.25rem}
+.gloss b{font-weight:400;font-style:italic;display:block}
+.gloss span{font-size:.9375rem;line-height:1.4;color:var(--muted)}
+
+/* Wissenscheck */
+.quiz{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);padding:1.75rem;max-width:52rem}
+.quiz-meta{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.quiz-meta .topic{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.quiz-meta .score{font-size:.9375rem}
+.quiz-q{font-size:1.375rem;line-height:1.25;margin-bottom:1.25rem}
+.quiz-answers{display:flex;flex-direction:column;gap:.5rem}
+.quiz-answers button{
+  text-align:left;background:transparent;border:1px solid var(--hairline);border-radius:.75rem;
+  padding:.875rem 1.125rem;cursor:pointer;font-size:1rem;line-height:1.35;display:flex;gap:.75rem;align-items:flex-start;
+}
+.quiz-answers button::before{content:attr(data-key);font-family:"Mulish",sans-serif;font-size:.75rem;color:var(--muted);
+  border:1px solid var(--hairline);border-radius:9999px;width:1.5rem;height:1.5rem;display:grid;place-items:center;flex:none}
+.quiz-answers button:hover:not(:disabled){border-color:var(--hairline-strong)}
+.quiz-answers button[data-state="right"]{border-color:var(--accent);background:rgba(0,255,153,.14)}
+.quiz-answers button[data-state="wrong"]{border-color:#ff4d4d;background:rgba(255,77,77,.1)}
+.quiz-why{margin-top:1.125rem;font-size:.9375rem;line-height:1.45}
+.quiz-why[hidden]{display:none}
+.quiz-next{margin-top:1.25rem;height:2.9375rem;padding:0 1.5rem;border-radius:9999px;background:var(--accent);
+  border:1px solid var(--hairline);cursor:pointer;font-size:1rem}
+
+/* Fußzeile */
+.site-footer{background:var(--background);border-top:1px solid var(--hairline);margin-top:3rem;padding:2.5rem 0 3rem;font-size:.9375rem;color:var(--muted)}
+.site-footer .row{display:flex;gap:1.5rem;justify-content:space-between;flex-wrap:wrap;align-items:flex-start}
+.disclaimer{max-width:40rem;line-height:1.45}
+.to-top{height:2.75rem;padding:0 1.25rem;border-radius:9999px;border:1px solid var(--hairline);background:var(--surface);
+  cursor:pointer;font-size:.9375rem;color:var(--foreground)}
+
+@media (max-width:600px){
+  .module-head{flex-direction:column;align-items:flex-start;gap:.875rem}
+  .module-toggle{width:100%;justify-content:center}
+  .tabs,.tabpanel,.mod-foot{padding-left:1.125rem;padding-right:1.125rem}
+  .quiz{padding:1.25rem}
+}
+
+@media print{
+  #preloader,#field,.site-header,#menu,.search-pill,.progress-pill,.scroll-hint,.quiz,.to-top{display:none!important}
+  body{background:#fff}
+  .hero{height:auto;display:block;padding:0 0 2rem}
+  .headline-wrap,.copy-rule,.lead,.body-copy,.stats{position:static!important;width:auto!important}
+  .module .panel,.principle .panel{grid-template-rows:1fr!important}
+  .tabpanel{display:flex!important}
+  .chapter{padding:1.5rem 0;break-inside:avoid}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Halbton-Feld: fixierter Hintergrund, WebGL2. Quelle ist eine lokal
+     gezeichnete Leinwand (kein externes Asset), damit die Seite auch per
+     file:// ohne CORS-Probleme läuft. -->
+<div id="field" aria-hidden="true"><canvas id="field-canvas"></canvas></div>
+
+<!-- Preloader: schwarzer Vorhang mit Zählwerk, dahinter der grüne Schleier -->
+<div id="preloader" aria-hidden="true">
+  <div class="curtain veil" id="veil"></div>
+  <div class="curtain ground" id="ground">
+    <div class="dial">
+      <svg viewBox="0 0 591 591" aria-hidden="true">
+        <circle id="ring" cx="295.5" cy="295.5" r="295" fill="none" stroke="currentColor"
+                stroke-width="1" transform="rotate(90 295.5 295.5)"
+                pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"></circle>
+      </svg>
+      <span class="disc" id="disc"></span>
+      <p class="count" id="count">0%</p>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <a class="brand" href="#top" data-anim="brand">
+    <span class="brand-disc">
+      <!-- Einheitslogo. Zum Austauschen: LOGO_SRC unten im Skript setzen. -->
+      <img class="mark" id="brand-mark" alt="" />
+    </span>
+    <span class="brand-word"><b>ÜKDO&nbsp;</b><i>Taktik</i></span>
+  </a>
+
+  <nav class="nav-pill" id="nav" aria-label="Kapitel" data-anim="nav" data-tx="translateX(-50%)">
+    <a href="#grundprinzipien">Grundprinzipien</a><span class="dot"></span>
+    <a href="#grundtaktiken">Grundtaktiken</a><span class="dot"></span>
+    <a href="#besonderheiten">Besonderheiten</a><span class="dot"></span>
+    <a href="#spezialisierungen">Spezialisierung</a>
+  </nav>
+
+  <div class="header-cta" data-anim="cta">
+    <a class="cta-btn" href="#wissenscheck">Wissenscheck</a>
+    <span class="cta-twin" aria-hidden="true"><span>
+      <svg viewBox="0 0 9 7.364" fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/>
+      </svg>
+    </span></span>
+  </div>
+
+  <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" data-anim="cta">
+    <i></i><i></i>
+  </button>
+</header>
+
+<div id="menu" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
+  <button class="menu-close" id="menu-close" aria-label="Menü schließen">✕</button>
+  <a href="#grundprinzipien" data-close>Grundprinzipien</a>
+  <a href="#grundtaktiken" data-close>Grundtaktiken</a>
+  <a href="#besonderheiten" data-close>Besonderheiten</a>
+  <a href="#spezialisierungen" data-close>Spezialisierung</a>
+  <a href="#glossar" data-close>Glossar</a>
+  <a class="menu-cta" href="#wissenscheck" data-close>Wissenscheck</a>
+</div>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+
+    <div class="headline-wrap">
+      <span class="headline-bar" id="headline-bar" aria-hidden="true"></span>
+      <h1 class="headline" id="hero-title" data-split="letters">Standards schaffen <i>Sicherheit</i></h1>
+    </div>
+
+    <div class="copy">
+      <span class="copy-rule" id="copy-rule" aria-hidden="true"></span>
+      <div class="copy-text">
+        <p class="lead" data-split="words" data-delay="500">Grundsätze vor Technik.</p>
+        <p class="body-copy" data-split="words" data-delay="620">Dieses Handbuch bündelt die Grundprinzipien, die vier Grundtaktiken, die örtlichen Besonderheiten und die Spezialisierungen des Überfallkommandos — an einem Ort, jederzeit nachlesbar, für Einsatzvorbereitung, Training und Nachbereitung.</p>
+      </div>
+    </div>
+
+    <ul class="stats" aria-label="Umfang des Handbuchs">
+      <li class="stat-card" data-accent="true" data-anim="stat"><p class="val">10</p><p class="lbl">Grundprinzipien</p></li>
+      <li class="stat-card" data-anim="stat"><p class="val">4</p><p class="lbl">Grundtaktiken</p></li>
+      <li class="stat-card" data-anim="stat"><p class="val">2</p><p class="lbl">Besonderheiten</p></li>
+      <li class="stat-card" data-accent="true" data-anim="stat"><p class="val">3</p><p class="lbl">Spezialisierungen</p></li>
+    </ul>
+
+    <form class="search-pill" id="search" role="search" data-anim="request" autocomplete="off">
+      <label class="sr-only" for="q">Handbuch durchsuchen</label>
+      <input id="q" name="q" type="search" placeholder="Handbuch durchsuchen …"
+             role="combobox" aria-expanded="false" aria-controls="hits" aria-autocomplete="list" />
+      <button class="search-submit" type="submit">Suchen<span class="bead" aria-hidden="true"></span></button>
+      <ul class="search-results" id="hits" role="listbox" aria-label="Treffer" hidden></ul>
+    </form>
+
+    <div class="progress-pill" data-anim="trust">
+      <p class="txt">Lernfortschritt <b id="progress-label">0 / 9</b></p>
+      <span class="progress-track" aria-hidden="true"><i id="progress-fill"></i></span>
+      <button class="progress-reset" id="progress-reset" type="button">Zurücksetzen</button>
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true"><span></span>Blättern</div>
+  </section>
+
+  <div class="paper">
+  <div class="shell" id="chapters"><!-- wird aus HANDBUCH gerendert --></div>
+
+  <section class="chapter" id="wissenscheck">
+    <div class="shell">
+      <div class="chapter-head reveal-up">
+        <span class="kicker">Weiterbildung</span>
+        <h2 class="chapter-title">Wissenscheck — <i>zehn Fragen</i></h2>
+        <p class="chapter-intro">Kurzabfrage quer durch das Handbuch. Kein Leistungsnachweis, sondern ein Selbsttest für die Einsatzvorbereitung: falsch beantwortete Fragen verweisen auf das zugehörige Kapitel.</p>
+      </div>
+      <div class="quiz reveal-up" id="quiz">
+        <div class="quiz-meta">
+          <span class="topic" id="quiz-topic"></span>
+          <span class="score" id="quiz-score"></span>
+        </div>
+        <p class="quiz-q" id="quiz-q"></p>
+        <div class="quiz-answers" id="quiz-answers"></div>
+        <p class="quiz-why" id="quiz-why" hidden></p>
+        <button class="quiz-next" id="quiz-next" type="button" hidden>Nächste Frage</button>
+      </div>
+    </div>
+  </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="shell row">
+    <p class="disclaimer">
+      <b style="font-weight:400;color:var(--foreground)">ÜKDO · Taktikhandbuch</b> — interne Ausbildungsunterlage.
+      Die Inhalte fassen allgemein anerkannte polizeitaktische Grundsätze zusammen und ersetzen keine Dienstvorschrift,
+      keinen Erlass und keine Einsatzbefehle. Verbindlich ist immer die aktuelle Weisungslage der Einheit.
+      Vor der Nutzung im Training durch die Ausbildungsleitung freigeben und um einheitseigene Verfahren ergänzen.
+    </p>
+    <button class="to-top" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Nach oben ↑</button>
+  </div>
+</footer>
+
+<script>
+/* ==========================================================================
+   1 · INHALT
+   --------------------------------------------------------------------------
+   Alles Fachliche steht hier — Layout, Animation und Interaktion lesen nur
+   aus dieser Struktur. Wer das Handbuch pflegt, muss ausschließlich diesen
+   Block anfassen: neue Punkte ergänzen, Formulierungen der eigenen
+   Weisungslage anpassen, Module hinzufügen.
+
+   Tab-Typen: "text" (Absatz), "list" (Aufzählung), "warn" (rote Aufzählung),
+   "steps" ({t,d}-Schritte), "roles" ({n,d}-Karten).
+   ========================================================================== */
+const HANDBUCH = {
+
+  grundprinzipien: {
+    id:"grundprinzipien",
+    kicker:"Über allem",
+    title:["Grundprinzipien der ","Taktik"],
+    intro:"Diese Sätze gelten in jeder Lage und stehen über jeder einzelnen Taktik. Wer sie beherrscht, kann eine unbekannte Lage bearbeiten; wer nur Abläufe auswendig kann, scheitert an der ersten Abweichung. Jede spezielle Taktik weiter unten ist nur die Anwendung dieser Prinzipien auf eine bestimmte Aufgabe.",
+    items:[
+      { nr:"01", title:"Auftrag, Lage, Rechtsrahmen",
+        claim:"Vor jeder Bewegung steht die Frage, was erreicht werden soll — und womit es zulässig ist.",
+        points:[
+          "Auftrag in einem Satz formulieren können: Was ist der Erfolg dieser Maßnahme?",
+          "Lage laufend beurteilen: Täter, Opfer, Örtlichkeit, Zeit, eigene Kräfte, Umfeld.",
+          "Rechtsgrundlage und Verhältnismäßigkeit sind Teil der Taktik, kein Anhang.",
+          "Jede Maßnahme braucht ein Ziel, eine Begründung und eine Abbruchbedingung.",
+          "Was nicht dem Auftrag dient, kostet Zeit und Sicherheit."
+        ],
+        note:"Ein Auftrag, den niemand in einem Satz wiederholen kann, ist im Team nicht angekommen."
+      },
+      { nr:"02", title:"Eigensicherung und Teamsicherung",
+        claim:"Wer selbst ausfällt, rettet niemanden mehr — Sicherung ist keine Vorsicht, sondern Voraussetzung.",
+        points:[
+          "Schutzausstattung vollständig, richtig sitzend und geprüft — vor dem Einsatz, nicht davor gehofft.",
+          "Niemand bewegt sich unbeobachtet: jede Bewegung hat eine Sicherung.",
+          "Waffenhandhabung so, dass kein Kamerad im Wirkbereich steht — auch nicht kurz.",
+          "Der eigene Rücken ist immer jemandes Auftrag.",
+          "Kein Alleingang aus Ungeduld: Einzelne werden gebunden, Teams wirken.",
+          "Erschöpfung, Hitze, Kälte und Dehydrierung sind taktische Faktoren."
+        ],
+        note:"Eigensicherung ersetzt nicht den Auftrag — sie ermöglicht ihn."
+      },
+      { nr:"03", title:"Deckung, Sichtschutz und Bewegung",
+        claim:"Deckung hält Geschosse auf. Sichtschutz nimmt nur die Sicht. Der Unterschied entscheidet.",
+        points:[
+          "Vor jeder Bewegung: Wohin gehe ich, was deckt mich dort, wer sichert mich dabei?",
+          "Kurze Wege, kurze Zeiten, unregelmäßige Rhythmen — lange gerade Strecken meiden.",
+          "Deckung wird genutzt, nicht angelehnt: Abstand halten, Winkel arbeiten, nicht die Silhouette anbieten.",
+          "Keine Bewegung ohne Ziel und ohne Rückfallpunkt.",
+          "Türen, Flure, Treppen, Ein- und Ausstiege sind Zwangspunkte — dort nie verweilen."
+        ],
+        note:"Fahrzeugtüren, Trockenbauwände, Sitzlehnen und Türblätter sind Sichtschutz, keine Deckung."
+      },
+      { nr:"04", title:"Raumaufteilung und Sektoren",
+        claim:"Jeder Winkel gehört jemandem — sonst gehört er dem Gegenüber.",
+        points:[
+          "360 Grad und dazu oben und unten: Sektoren werden vergeben, nicht angenommen.",
+          "Überlappende Sektoren statt Lücken; jeder kennt den Sektor seines Nachbarn.",
+          "Bei jeder Formationsänderung werden Sektoren neu bestätigt.",
+          "Wer einen Sektor verlässt, meldet es und übergibt ihn ausdrücklich.",
+          "Kontrollierte Bereiche werden gekennzeichnet, damit sie nicht zweimal gebunden werden."
+        ],
+        note:"Der häufigste Fehler ist nicht der falsche Sektor, sondern der unbesetzte."
+      },
+      { nr:"05", title:"Kommunikation und Funkdisziplin",
+        claim:"Kurz, eindeutig, quittiert — und nur, was der andere zum Handeln braucht.",
+        points:[
+          "Einheitliche Begriffe: dieselben Worte für dieselben Dinge, einheitsweit.",
+          "Melden nach dem Muster: Wer — Wo — Was — Was jetzt gebraucht wird.",
+          "Jede sicherheitsrelevante Ansage wird zurückgemeldet (Quittung), sonst gilt sie als nicht angekommen.",
+          "Ein Sprecher pro Lage gegenüber dem Betroffenen, ein Meldeweg nach außen.",
+          "Funkstille ist auch eine Information — regelmäßige Lebenszeichen vereinbaren.",
+          "Ausfall des Funks ist eingeplant: Sicht-, Hand- und Berührungszeichen sind geübt."
+        ],
+        note:"Wer über Funk erzählt statt meldet, blockiert den Kanal für den, der ihn braucht."
+      },
+      { nr:"06", title:"Führung und Rollen",
+        claim:"Klare Zuständigkeit, klare Übergabe, klare Vertretung.",
+        points:[
+          "Jede Rolle ist vor dem Einsatz benannt: Führung, Zugriff, Sicherung, Breaching, Medic, Verbindung.",
+          "Jede Rolle hat eine Vertretung — Ausfall darf keine Lücke reißen.",
+          "Führung entscheidet, das Team meldet — Entscheidungen werden nicht diskutiert, sondern hinterher ausgewertet.",
+          "Führung von vorn heißt Übersicht behalten, nicht als Erster durch die Tür.",
+          "Wer eine Rolle übernimmt, sagt es laut: Übernahmen werden bestätigt."
+        ],
+        note:"Rollen werden vor dem Objekt verteilt, nicht darin."
+      },
+      { nr:"07", title:"Zeit, Tempo und Dynamik",
+        claim:"Tempo ist ein Mittel, kein Wert. Zeit erzeugt Optionen.",
+        points:[
+          "Solange keine unmittelbare Gefahr für Leib und Leben besteht: verlangsamen, absichern, Kräfte und Optionen aufbauen.",
+          "Läuft Gewalt gerade ab, kehrt sich das um — dann ist jede Minute eine Größe im Schadensbild.",
+          "Tempo wird bewusst gewählt und angesagt, nicht aus Anspannung übernommen.",
+          "Ein Tempowechsel wird kommuniziert, sonst reißt die Formation.",
+          "Warten ist eine Handlung, wenn es begründet ist."
+        ],
+        note:"Die Frage lautet nie „schnell oder langsam“, sondern: Was gewinnt gerade Leben?"
+      },
+      { nr:"08", title:"Waffenhandhabung und Zielraum",
+        claim:"Die Waffe zeigt nur dorthin, wo eine Wirkung zulässig und beherrscht wäre.",
+        points:[
+          "Finger gerade außerhalb des Abzugbügels, bis die Entscheidung gefallen ist.",
+          "Ziel, Umfeld und Hintergrund werden gemeinsam bewertet — auch unter Zeitdruck.",
+          "Durchschuss, Querschläger und Wandaufbau gehören zur Zielraumbewertung.",
+          "Sichern, Entladen, Umhängen und Waffenwechsel sind trainierte Abläufe, keine Improvisationen.",
+          "Distanzmittel und Schusswaffe werden nie unkoordiniert nebeneinander eingesetzt."
+        ],
+        note:"Jeder abgegebene Schuss muss auch nach dem Einsatz noch begründbar sein."
+      },
+      { nr:"09", title:"Stress, Wahrnehmung, Entscheidung",
+        claim:"Unter Belastung verengt sich die Wahrnehmung — dagegen hilft nur Struktur.",
+        points:[
+          "Beobachten — Bewerten — Entscheiden — Handeln, und dann wieder von vorn: keine Entscheidung ist endgültig.",
+          "Tunnelblick und Hörverengung aktiv gegensteuern: Blick lösen, Umfeld absuchen, laut melden.",
+          "Atemtechnik und Handlungsroutinen sind trainierbar und wirken.",
+          "Feste Handlungsmuster für die ersten 30 Sekunden entlasten die Entscheidung.",
+          "Zweifel werden ausgesprochen — ein Einwand ist eine Information, kein Angriff auf die Führung."
+        ],
+        note:"Unter Druck fällt niemand auf sein Wissen zurück, sondern auf sein Training."
+      },
+      { nr:"10", title:"Nachbereitung und Ausbildung",
+        claim:"Ohne Auswertung wird aus Erfahrung nur Gewohnheit.",
+        points:[
+          "Nach jeder Maßnahme eine kurze, strukturierte Auswertung: Auftrag, Ablauf, Abweichung, Erkenntnis.",
+          "Fehler werden benannt, nicht zugeordnet — Lernen vor Schuldfrage.",
+          "Erkenntnisse fließen zurück in Verfahren, Ausbildung und dieses Handbuch.",
+          "Material, Ausrüstung und Medizintasche werden sofort wieder einsatzbereit gemacht.",
+          "Belastende Ereignisse werden angesprochen; Nachsorge ist Teil der Einsatzbereitschaft."
+        ],
+        note:"Ein Verfahren, das seit Jahren unverändert ist, wurde entweder nie geprüft oder nie gebraucht."
+      }
+    ]
+  },
+
+  grundtaktiken: {
+    id:"grundtaktiken",
+    kicker:"Die vier Grundtaktiken",
+    title:["Grundtaktiken der ","Einheit"],
+    intro:"Vier Verfahren decken den Kern des Auftragsspektrums ab. Sie unterscheiden sich vor allem in einer Frage: Wie viel Zeit steht zur Verfügung? BuD hat sie, die Notintervention hat sie nicht, die Messer-Intervention muss sie erst herstellen, der Notzugriff verbraucht sie in Sekunden. Alle vier stehen auf denselben Grundprinzipien.",
+    modules:[
+      {
+        id:"bud", abbr:"BuD", title:"Betreten und Durchsuchen",
+        subtitle:"Planmäßiges Erschließen und lückenloses Absuchen eines Objekts, wenn Zeit zur Verfügung steht.",
+        merksatz:"Wer Zeit hat, nimmt sie sich. BuD ist Methode, nicht Tempo.",
+        tabs:[
+          { label:"Zweck & Schwelle", type:"text",
+            data:"BuD bringt ein Objekt Raum für Raum unter Kontrolle: Personen werden aufgefunden und gesichert, Gefahren ausgeschlossen, der Bereich wird als kontrolliert übergeben. Voraussetzung ist, dass keine Gewalt gegen Leib und Leben gerade abläuft. Ist das der Fall, wird nicht durchsucht, sondern interveniert (siehe NIT). Läuft nichts, gilt: Objekt isolieren, Kräfte aufbauen, methodisch arbeiten.",
+            extra:["Kein laufendes Tötungsgeschehen — sonst NIT.","Objekt kann umstellt und isoliert werden.","Ausreichend Kräfte, Ausstattung und Zeit vorhanden.","Zugangsmöglichkeit geklärt (Schlüssel, Berechtigter, Breaching)."] },
+          { label:"Grundsätze", type:"list",
+            data:["Sicherheit vor Tempo — jeder Schritt ist gesichert und umkehrbar.",
+                  "Kein unkontrollierter Raum im Rücken: was passiert wurde, ist entweder kontrolliert oder gesichert.",
+                  "Türen, Flure und Treppen sind Zwangspunkte; Winkel werden von außen abgearbeitet, statt hineinzustürzen.",
+                  "Jeder Raum bekommt eine Verantwortung, jeder Sektor einen Namen.",
+                  "Kontrollierte Bereiche werden einheitlich gekennzeichnet, damit keine Kraft doppelt gebunden wird.",
+                  "Angetroffene Personen werden getrennt, gesichert, identifiziert und aus dem Wirkbereich gebracht.",
+                  "Meldungen sind kurz und werden quittiert; Standortangaben immer nach demselben Schema (Etage, Achse, Raum)."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Auftragsklärung und Lagebild", d:"Objektkenntnis, Grundriss, Zugänge, Bewohner, Gefahrenhinweise, Rechtsgrundlage, Rollen und Kennzeichnungssystem festlegen."},
+              {t:"Anmarsch und Bereitstellung", d:"Verdeckt oder offen, Absitzpunkt, Umstellung, Absperrung. Formation bilden, Sektoren bestätigen, letzte Ausrüstungskontrolle."},
+              {t:"Zugang herstellen", d:"Einfachste Öffnung zuerst prüfen. Reicht das nicht: Breaching nach Türkunde und mit angekündigtem Verfahren."},
+              {t:"Türverfahren und Betreten", d:"Position beziehen, Türblatt und Öffnungsrichtung berücksichtigen, Raum von außen so weit wie möglich einsehen, dann geschlossen betreten und den Zwangspunkt sofort verlassen."},
+              {t:"Raumdominanz herstellen", d:"Ecken und tote Winkel zuerst, Personen ansprechen und binden, Raum als kontrolliert melden, Anschlusstüren sichern."},
+              {t:"Feinsuche", d:"Erst nachdem der Bereich kontrolliert ist: systematisch, im selben Drehsinn, Verstecke und Zwischenräume einbeziehen, nichts ohne Sicherung öffnen."},
+              {t:"Kennzeichnung und Übergabe", d:"Kontrollierten Bereich markieren, Ergebnis melden, Übergang zum nächsten Abschnitt oder Übergabe an nachfolgende Kräfte."},
+              {t:"Nachbereitung", d:"Kurzauswertung, Materialcheck, Dokumentation, Erkenntnisse an die Ausbildung."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Führung", d:"Auftrag, Reihenfolge, Freigaben, Verbindung nach außen. Behält die Übersicht statt vorne mitzugehen."},
+              {n:"Nr. 1 — Zugriff", d:"Betritt zuerst, arbeitet den ersten Winkel ab, gibt die Bewegungsrichtung vor."},
+              {n:"Nr. 2 — Sicherung", d:"Deckt den Gegenwinkel, schließt unmittelbar auf, hält den Kontakt zur Formation."},
+              {n:"Rückwärtige Sicherung", d:"Sichert den bereits passierten Bereich und die Anschlusstüren; meldet Nachdrücken von hinten."},
+              {n:"Breacher", d:"Türkunde, Werkzeugwahl, Öffnung, Rückfallverfahren. Räumt die Öffnung nach dem Zugang sofort."},
+              {n:"Medic", d:"Trägt die Versorgung mit, versorgt erst, wenn der Bereich es zulässt, führt die Übergabe an den Rettungsdienst."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Tempo ohne Notwendigkeit — BuD wird zur schlechten Notintervention.",
+                  "Unbesetzte Sektoren nach Formationswechsel.",
+                  "Überholen oder Vorbeigehen ohne Ankündigung.",
+                  "Funkkanal mit Erzählungen statt Meldungen belegen.",
+                  "Kennzeichnung vergessen: Bereiche werden mehrfach gebunden oder gelten fälschlich als kontrolliert.",
+                  "Angetroffene Personen bleiben unbegleitet im Rücken der Formation.",
+                  "Feinsuche beginnt, bevor der Bereich kontrolliert ist."] }
+        ]
+      },
+      {
+        id:"nit", abbr:"NIT", title:"Notintervention",
+        subtitle:"Sofortiges Eingreifen, solange Gewalt gegen Leib und Leben gerade abläuft.",
+        merksatz:"Zum Geschehen, nicht daran vorbei — jede Minute ist eine Größe im Schadensbild.",
+        tabs:[
+          { label:"Zweck & Schwelle", type:"text",
+            data:"Die Notintervention unterbricht ein laufendes Tötungs- oder schwerstes Gewaltgeschehen so früh wie möglich. Sie ist bewusst der Gegenentwurf zu BuD: nicht absichern und aufbauen, sondern eingreifen — auch mit reduzierter Kräftezahl, auch ohne vollständiges Lagebild. Sobald das Geschehen unterbrochen ist, wird wieder in ein methodisches Verfahren übergegangen.",
+            extra:["Laufende Gewalt gegen Leib und Leben oder konkrete Anzeichen dafür.","Warten würde zusätzliche Opfer bedeuten.","Auch ohne vollständige Kräfte und ohne fertiges Lagebild.","Endet mit der Unterbrechung des Geschehens — danach Übergang in das Regelvorgehen."] },
+          { label:"Grundsätze", type:"list",
+            data:["Zeit schlägt Gründlichkeit: Räume werden durchquert, nicht durchsucht.",
+                  "Bewegung in Richtung des Geschehens — Geräusche, Schüsse, Schreie, Meldungen sind die Richtungsangabe.",
+                  "Verletzte werden zunächst passiert: Standort melden, kennzeichnen, Versorgung durch nachfolgende Kräfte.",
+                  "Kleine Einheit, hohe Geschwindigkeit, einfache Formation — komplexe Verfahren halten nicht.",
+                  "Nur die Zwangspunkte werden abgearbeitet, die auf dem Weg liegen.",
+                  "Laufende Lagemeldung nach außen: Standort, Richtung, Erkenntnisse, Bedarf.",
+                  "Sofort nach Unterbrechung des Geschehens: Wechsel in ein gesichertes, methodisches Vorgehen."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Meldung annehmen und bewerten", d:"Läuft Gewalt gerade ab? Dann keine Bereitstellung, kein Aufbau — Entscheidung in Sekunden."},
+              {t:"Sofortiges Vorgehen", d:"Kürzester sicherer Weg zum Geschehen, Formation im Gehen bilden, Rollen im Gehen vergeben."},
+              {t:"Zug zum Geschehen", d:"Orientierung an Geräusch, Meldung und Personenstrom. Fliehende Personen kurz ansprechen, nicht binden."},
+              {t:"Täterhandeln unterbinden", d:"Der Angriff wird gestoppt — durch Ansprache, Bindung, Distanzmittel oder Schusswaffengebrauch nach Rechtslage."},
+              {t:"Übergang in das Regelvorgehen", d:"Lage einfrieren, Bereich sichern, Kräfte nachziehen, methodisch weiterarbeiten (BuD)."},
+              {t:"Rettungskräfte einweisen", d:"Verletztenstandorte melden, gesicherte Zugangswege und Rettungsachse festlegen, Übergabe an den Medic und den Rettungsdienst."},
+              {t:"Nachbereitung", d:"Auswertung, Nachsorge, Spurenlage, Meldewege dokumentieren."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Interventionstrupp", d:"Geht vor und unterbricht das Geschehen. Klein, schnell, eine Bewegungsrichtung."},
+              {n:"Führung", d:"Entscheidet die Auslösung, hält die Verbindung, zieht Folgekräfte nach und ordnet den Übergang in das Regelvorgehen an."},
+              {n:"Verbindung Leitstelle", d:"Laufende Standort- und Lagemeldung, Anforderung von Kräften und Rettungsdienst, Warnung nachrückender Streifen."},
+              {n:"Nachfolgende Kräfte", d:"Verletztenversorgung, Sicherung des passierten Bereichs, Absperrung, Betreuung fliehender Personen."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Warten auf Vollständigkeit von Kräften oder Ausstattung.",
+                  "Abgleiten in BuD-Verfahren: der Trupp beginnt zu durchsuchen und verliert den Bezug zum Geschehen.",
+                  "Der Interventionstrupp beginnt mit der Verletztenversorgung und bindet sich fest.",
+                  "Keine Standortmeldung — nachrückende Kräfte kennen die eigene Position nicht.",
+                  "Zu große Formation: das Vorgehen wird langsam und laut.",
+                  "Nach der Unterbrechung wird das Tempo beibehalten, statt in ein gesichertes Verfahren zu wechseln."] }
+        ]
+      },
+      {
+        id:"messer", abbr:"Messer", title:"Messer-Intervention",
+        subtitle:"Umgang mit Angriffen mit Stich-, Schnitt- und Hiebwaffen — Distanz herstellen, Zeit gewinnen, koordiniert eingreifen.",
+        merksatz:"Abstand, Deckung, Zeit — in dieser Reihenfolge.",
+        tabs:[
+          { label:"Zweck & Schwelle", type:"text",
+            data:"Angriffe mit Messern entwickeln sich aus geringer Distanz und in sehr kurzer Zeit. Eine Person mit Messer kann kurze Strecken schneller überbrücken, als auf sie reagiert werden kann — Reaktion ist der Aktion grundsätzlich unterlegen. Die Taktik zielt deshalb nicht auf die schnellere Reaktion, sondern darauf, die Distanz gar nicht erst entstehen zu lassen: Abstand halten, Barrieren nutzen, Zeit gewinnen, Rollen verteilen und erst dann koordiniert eingreifen.",
+            extra:["Bewaffnete Person ohne unmittelbaren Angriff auf Dritte: Zeit gewinnen, Kräfte und Optionen aufbauen.","Unmittelbarer Angriff auf Dritte: sofortiges Einschreiten (Übergang zur Notintervention).","Eigengefährdung durch Enge, Dunkelheit oder Unbeteiligte erhöht die notwendige Distanz.","Rückzug und Neuaufbau sind eine zulässige und häufig die bessere Option."] },
+          { label:"Grundsätze", type:"list",
+            data:["Distanz ist die wirksamste Schutzausstattung — und die einzige, die auch die Entscheidung schützt.",
+                  "Barrieren aktiv suchen und einsetzen: Fahrzeug, Tür, Möbel, Geländer, Höhenunterschied.",
+                  "Nicht rückwärts geradeaus ausweichen — seitlich versetzt bewegen, Winkel arbeiten, freien Boden im Blick behalten.",
+                  "Rollen laut verteilen: einer spricht, einer führt das Distanzmittel, einer sichert. Alles andere erzeugt Chaos.",
+                  "Nur ein Sprecher gegenüber der Person; Ansagen kurz, wiederholend, widerspruchsfrei.",
+                  "Distanzmittel werden angekündigt und immer mit Sicherung eingesetzt, nie allein.",
+                  "Nach der Fixierung: Waffenkontrolle, Absuchen, sofortige medizinische Versorgung — auch der eigenen Kräfte.",
+                  "Stich- und Schnittverletzungen werden am eigenen Körper unter Anspannung häufig nicht bemerkt: nach jedem Kontakt gegenseitiger Sichtcheck."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Erkennen und melden", d:"Bewaffnung, Verhalten, Umfeld, Fluchtwege und Unbeteiligte melden. Frühzeitig zusätzliche Kräfte und Distanzmittel anfordern."},
+              {t:"Distanz und Barriere herstellen", d:"Abstand vergrößern, Barriere zwischen sich und die Person bringen, Rückweg freihalten, Unbeteiligte aus dem Bereich führen."},
+              {t:"Rollen verteilen", d:"Kommunikator, Distanzmittelführer, Sicherung, Zugriff und Fesselung, Medic — laut und bestätigt."},
+              {t:"Kommunikation aufnehmen", d:"Klare, kurze, wiederholte Ansagen. Zeit ist das Ziel: Deeskalation ist der schnellste Weg zu einem Ergebnis ohne Verletzte."},
+              {t:"Eingreifen", d:"Auf Anordnung koordinierter Einsatz der Zwangsmittel — Distanzmittel mit Sicherung, klare Auslösung, definierter Abbruch."},
+              {t:"Fixieren und entwaffnen", d:"Waffe zuerst kontrollieren und aus dem Zugriffsbereich entfernen, dann fesseln, dann absuchen."},
+              {t:"Versorgen", d:"Sofortige Kontrolle auf Stich- und Schnittverletzungen bei Betroffenen und eigenen Kräften; kritische Blutung zuerst."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Kommunikator", d:"Führt als Einziger das Gespräch, bindet die Aufmerksamkeit, gibt keine widersprüchlichen Ansagen."},
+              {n:"Distanzmittelführer", d:"Bereitet das Distanzmittel vor, meldet Einsatzbereitschaft, wirkt erst auf Anordnung."},
+              {n:"Sicherung", d:"Deckt den Distanzmitteleinsatz ab, bewertet Ziel, Umfeld und Hintergrund durchgehend."},
+              {n:"Zugriff und Fesselung", d:"Greift erst nach Wirkung zu, kontrolliert zuerst die Waffenhand, führt die Fesselung."},
+              {n:"Medic", d:"Steht bereit, übernimmt unmittelbar nach der Fixierung, prüft auch die eigenen Kräfte."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Alleingang aus Zeitdruck — der Einzelne verliert das Distanzspiel.",
+                  "Alle sprechen gleichzeitig; die Person bekommt widersprüchliche Anweisungen.",
+                  "Zu geringe Distanz, keine Barriere, kein Rückweg.",
+                  "Rückwärts geradeaus ausweichen und stolpern.",
+                  "Distanzmittel ohne Sicherung oder ohne Ankündigung.",
+                  "Fesselung, bevor die Waffe kontrolliert ist.",
+                  "Keine Kontrolle auf eigene Stichverletzungen nach dem Kontakt."] }
+        ]
+      },
+      {
+        id:"notzugriff", abbr:"Notzugriff", title:"Notzugriff",
+        subtitle:"Der aus der Lage heraus ausgelöste Zugriff, wenn ohne sofortiges Handeln Leben unmittelbar verloren geht.",
+        merksatz:"Der Notzugriff wird geplant, bevor er gebraucht wird.",
+        tabs:[
+          { label:"Zweck & Schwelle", type:"text",
+            data:"Der Notzugriff ist das Gegenstück zum geplanten Zugriff: Er wird nicht zum günstigsten Zeitpunkt ausgelöst, sondern zum spätestmöglichen — wenn eine Lage kippt und jede weitere Minute Leben kostet. Entscheidend ist, dass er nie improvisiert wird: Vom ersten Moment einer statischen Lage an steht ein Notzugriffsplan, der laufend an die Lageentwicklung angepasst wird. Improvisiert wird nur die Auslösung, nie das Verfahren.",
+            extra:["Konkrete Anzeichen für unmittelbar bevorstehende Tötung oder schwerste Gewalt.","Verhandlungs- und Zeitoption ist erschöpft oder bricht ab.","Zuvor festgelegte Auslösekriterien treten ein.","Auslösung nur durch den ausdrücklich benannten Berechtigten."] },
+          { label:"Grundsätze", type:"list",
+            data:["Ab Minute eins steht ein Notzugriffsplan: Zugang, Reihenfolge, Auslösewort, Abbruchwort, Rückfallverfahren.",
+                  "Der Plan wird bei jeder Lageänderung fortgeschrieben und dem Team kurz bestätigt.",
+                  "Auslösekriterien und Auslöseberechtigung sind schriftlich und allen bekannt.",
+                  "Überraschung, Schnelligkeit und Entschlossenheit ersetzen die fehlende Vorbereitungszeit — im Rahmen der Verhältnismäßigkeit.",
+                  "Betroffene und Täter werden sofort getrennt, gesichert und identifiziert; jede Person gilt zunächst als unbekannt.",
+                  "Ein Abbruch muss jederzeit möglich sein und ist keine Niederlage.",
+                  "Unmittelbar nach dem Zugriff: Versorgung, Evakuierung, Spurensicherung, Nachsorge."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Dauerbereitschaft herstellen", d:"Notzugriffsplan erstellen, Kräfte in Bereitstellung, Zugangswege erkundet, Werkzeuge und Sicherungsschützen in Position."},
+              {t:"Auslösekriterien beobachten", d:"Beobachtung, Aufklärung und Verhandlungsverlauf laufend gegen die festgelegten Kriterien prüfen."},
+              {t:"Auslösung", d:"Durch den Berechtigten, mit dem vereinbarten Auslösewort, auf allen beteiligten Kanälen."},
+              {t:"Zugang herstellen", d:"Vorbereitetes Breaching-Verfahren mit Rückfallverfahren; Ankündigung und Freigabe wie geübt."},
+              {t:"Zugriff und Trennung", d:"Kürzester Weg zum Täter, Trennung von Betroffenen, Bindung, Waffenkontrolle."},
+              {t:"Sichern und identifizieren", d:"Alle Personen fesseln, absuchen, identifizieren und einzeln aus dem Bereich führen."},
+              {t:"Versorgen und evakuieren", d:"Medic übernimmt, Rettungsachse festlegen, Betroffene betreuen und getrennt befragen."},
+              {t:"Lage einfrieren", d:"Spurenlage sichern, Bereich übergeben, Kurzauswertung und Nachsorge einleiten."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Führung", d:"Hält den Plan aktuell, entscheidet die Auslösung, spricht das Auslöse- und Abbruchwort."},
+              {n:"Zugriffstrupp", d:"Führt den Zugriff nach dem geübten Verfahren; keine Improvisation im Objekt."},
+              {n:"Breacher", d:"Hält Zugang und Rückfallverfahren dauerhaft bereit; Werkzeuge sind bereits am Objekt."},
+              {n:"Sicherungsschütze", d:"Beobachtet, meldet laufend, liefert die Auslösekriterien mit und wirkt nur auf Freigabe."},
+              {n:"Medic", d:"Rückt unmittelbar nach, versorgt Betroffene und eigene Kräfte, koordiniert den Rettungsdienst."},
+              {n:"Auffangkräfte", d:"Nehmen Betroffene auf, trennen, identifizieren, betreuen und verhindern unkontrolliertes Verlassen."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Kein aktueller Plan — der Zugriff wird im Moment der Auslösung erst besprochen.",
+                  "Unklare Auslöseberechtigung oder mehrdeutiges Auslösewort.",
+                  "Kein Abbruchwort und kein Rückfallverfahren.",
+                  "Zu großes Team am Zugang: der Zwangspunkt verstopft.",
+                  "Betroffene werden nicht getrennt und nicht identifiziert.",
+                  "Versorgung und Betreuung erst nach der Spurensicherung."] }
+        ]
+      }
+    ]
+  },
+
+  besonderheiten: {
+    id:"besonderheiten",
+    kicker:"Örtliche Gegebenheiten",
+    title:["Besonderheiten — ","gleiche Taktik, anderer Raum"],
+    intro:"Hier kommt keine neue Taktik hinzu. BuD, Notintervention, Messer-Intervention und Notzugriff gelten unverändert. Was sich ändert, sind einzelne Verhaltensweisen, weil die Örtlichkeit eigene Gefahren, eigene Zwangspunkte und eigene Zuständigkeiten mitbringt. Diese Abweichungen werden vorher besprochen — im Objekt ist es zu spät.",
+    modules:[
+      {
+        id:"oepnv", abbr:"ÖPNV", tone:"ghost", title:"Öffentlicher Personenverkehr",
+        subtitle:"Bus, Straßenbahn, U- und S-Bahn, Bahnhöfe und Tunnel — enge Räume, fremde Technik, viele Unbeteiligte.",
+        merksatz:"Kein Fuß ins Gleis ohne quittierte Abschaltung.",
+        tabs:[
+          { label:"Was sich ändert", type:"list",
+            data:["Lange, enge Röhren mit sehr wenig echter Deckung: Sitze, Verkleidungen und Trennwände sind Sichtschutz.",
+                  "Erhöhte Durchschuss- und Querschlägergefahr in Metall- und Glasumgebungen; Hintergrund ist selten frei.",
+                  "In fast jedem Schussfeld befinden sich Unbeteiligte — Schussfeld und Personenstrom fallen zusammen.",
+                  "Ein- und Ausstiege, Rolltreppen, Zugänge und Tunnelmünder sind ausgeprägte Zwangspunkte.",
+                  "Türen, Beleuchtung, Fahrbetrieb und Durchsagen werden nicht von der Polizei gesteuert, sondern vom Verkehrsbetrieb.",
+                  "Funkversorgung in Tunneln und Unterführungen ist eingeschränkt oder fehlt.",
+                  "Fluchtwege der Fahrgäste und eigene Zugangswege kreuzen sich — Gegenverkehr ist der Normalfall.",
+                  "Fahrzeuge bewegen sich: eine Lage kann die Örtlichkeit während des Anmarsches wechseln."] },
+          { label:"Zwingende Absprachen", type:"warn",
+            data:["Fahrzeug- oder Zughalt an einem festgelegten, erreichbaren Punkt — nicht im Tunnel, wenn vermeidbar.",
+                  "Fahrstromabschaltung und Erdung ausschließlich über die Leitstelle des Verkehrsbetriebs — Rückmeldung abwarten und laut quittieren.",
+                  "Gleisbereich erst betreten, wenn Abschaltung und Erdung ausdrücklich bestätigt sind und der Gegenverkehr gesperrt ist.",
+                  "Türfreigabe, Notentriegelung und Innenbeleuchtung vorab abstimmen — nicht selbst improvisieren.",
+                  "Bahnsteig- und Zugangssperrung, Lautsprecherdurchsagen und Fahrgastlenkung mit dem Verkehrsbetrieb festlegen.",
+                  "Verbindungsbeamter zum Verkehrsbetrieb benennen — eine Person, ein Meldeweg.",
+                  "Kameraaufschaltung und Fahrzeugortung des Betreibers nutzen und in die Lagemeldung einbinden."] },
+          { label:"Ablauf-Anpassung", type:"steps",
+            data:[
+              {t:"Verbindung herstellen", d:"Leitstelle des Verkehrsbetriebs unmittelbar einbinden: Fahrzeugnummer, Standort, Kameras, Fahrplanlage, Ansprechpartner vor Ort."},
+              {t:"Isolieren", d:"Fahrzeug anhalten lassen, Bahnsteig und Zugänge sperren, Personenstrom stoppen, weitere Fahrzeuge aus dem Bereich halten."},
+              {t:"Technik freigeben lassen", d:"Fahrstrom aus, Erdung gesetzt, Rückmeldung erhalten und quittiert. Erst dann Bewegung im Gleis oder am Fahrzeug."},
+              {t:"Zugänge sichern", d:"Alle Ein- und Ausstiege, Treppen, Rolltreppen und Tunnelmünder besetzen oder sperren, bevor betreten wird."},
+              {t:"Betreten", d:"Über festgelegte Zugänge, Zwangspunkt sofort verlassen, Sektoren in Längsrichtung und quer vergeben."},
+              {t:"Wagenweise abarbeiten", d:"Abschnitt für Abschnitt nach dem Regelverfahren, jeder kontrollierte Wagen wird gemeldet und gekennzeichnet."},
+              {t:"Evakuierungsrichtung festlegen", d:"Eine Richtung, vom Geschehen weg, über einen gesicherten Weg; Fahrgäste werden geführt, nicht nur geschickt."},
+              {t:"Übergabe", d:"Bereich an nachfolgende Kräfte übergeben, Freigabe an den Verkehrsbetrieb erst nach ausdrücklicher Entscheidung der Führung."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Verbindungsbeamter Verkehrsbetrieb", d:"Einziger Kanal zur Betriebsleitstelle: Halt, Fahrstrom, Türen, Durchsagen, Kameras. Führt ein schriftliches Protokoll der Freigaben."},
+              {n:"Trupp im Fahrzeug", d:"Arbeitet die Wagen nach dem Regelverfahren ab, meldet Standort nach festem Schema (Wagen, Tür, Richtung)."},
+              {n:"Bahnsteig- und Zugangssicherung", d:"Hält Zwangspunkte, verhindert Nachströmen, nimmt fliehende Personen auf."},
+              {n:"Evakuierungsführer", d:"Legt die Richtung fest, führt Fahrgäste aktiv, meldet Zahlen und Auffälligkeiten."},
+              {n:"Medic", d:"Rechnet mit vielen Betroffenen auf engem Raum; legt Sammelpunkt und Rettungsachse früh fest."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Gleis betreten ohne bestätigte Abschaltung und Erdung.",
+                  "Sitzlehnen, Türblätter und Verkleidungen als Deckung behandeln.",
+                  "Evakuierung in die Richtung, in die sich das Geschehen bewegt.",
+                  "Funklöcher im Tunnel nicht eingeplant — keine Rückfallkommunikation vereinbart.",
+                  "Fahrgäste bleiben unkontrolliert im Rücken der Formation.",
+                  "Mehrere Kräfte sprechen parallel mit dem Verkehrsbetrieb; Freigaben werden widersprüchlich.",
+                  "Freigabe des Betriebs, bevor der Bereich tatsächlich übergeben ist."] }
+        ]
+      },
+      {
+        id:"wasser", abbr:"Wasser", tone:"ghost", title:"Wasser und Uferbereiche",
+        subtitle:"Boot, Steg, Ufer, Hafen und Schiff — eingeschränkte Bewegung, Kälte und eine Ausstattung, die im Wasser zur Gefahr wird.",
+        merksatz:"Wer schwimmt, kämpft nicht. Erst Auftrieb, dann Auftrag.",
+        tabs:[
+          { label:"Was sich ändert", type:"list",
+            data:["Die eigene Ausstattung wird im Wasser lebensgefährlich: Schutzweste, Platten, Munition und Stiefel ziehen nach unten.",
+                  "Bewegungsflächen sind schmal, nass, beweglich und laut — Stege, Bordwände, Leitern, Decks.",
+                  "Kälte reduziert Feinmotorik, Griffkraft und Urteilsfähigkeit binnen weniger Minuten.",
+                  "Über der Wasserfläche gibt es praktisch keinen sicheren Hintergrund; flache Winkel begünstigen Abpraller über weite Strecken.",
+                  "Boote sind keine Deckung; sie schwanken, und die eigene Standfestigkeit bestimmt die Trefferlage.",
+                  "Wind, Strömung, Wellengang, Sicht und Wassertemperatur sind Lagefaktoren mit direkter Wirkung auf die Zeitplanung.",
+                  "Zuständigkeiten sind geteilt: Wasserschutzpolizei, Feuerwehr, Rettungsdienst, Hafen- oder Schleusenbetrieb, Schiffsführer.",
+                  "Die Rettungskette hat Vorrang: eine Person im Wasser ist zuerst ein Rettungs-, dann ein Einsatzproblem."] },
+          { label:"Zwingende Absprachen", type:"warn",
+            data:["Rettungsschwimmer oder Sicherungsboot ist am Platz, bevor sich Kräfte über Wasser bewegen.",
+                  "Auftriebsmittel werden getragen — auch und gerade mit Schutzausstattung; Schnelltrennung muss möglich und geübt sein.",
+                  "Mann-über-Bord-Verfahren vor dem Einsatz besprochen: Ruf, Markierung, Beobachter, Manöver, Bergepunkt.",
+                  "Fachkräfte frühzeitig hinzuziehen: Wasserschutzpolizei, Feuerwehr, DLRG, Bootsführer, Schiffsführer.",
+                  "Wetter, Strömung, Wassertemperatur und Sicht werden vor dem Anmarsch abgefragt und in die Zeitplanung übernommen.",
+                  "Kälteschutz und Wiedererwärmung sind vor Ort vorbereitet, nicht angefordert, wenn jemand im Wasser war.",
+                  "Schusseinsatz über der Wasserfläche nur mit ausdrücklicher Bewertung von Winkel, Hintergrund und Schifffahrt."] },
+          { label:"Ablauf-Anpassung", type:"steps",
+            data:[
+              {t:"Gewässerlage aufnehmen", d:"Uferbeschaffenheit, Zu- und Abgänge, Tiefe, Strömung, Temperatur, Schiffsverkehr, Beleuchtung und Bergepunkte."},
+              {t:"Fachkräfte einbinden", d:"Zuständigkeiten klären, gemeinsame Führungsstruktur und einen Funkkanal für alle Beteiligten festlegen."},
+              {t:"Ausstattung anpassen", d:"Auftrieb anlegen, Beladung reduzieren, Schnelltrennung prüfen, Kälteschutz bereitlegen, Ausrüstung sichern."},
+              {t:"Bewegungsplan festlegen", d:"Wer bewegt sich wo, über welchen Steg, in welcher Reihenfolge, mit welcher Sicherung an Land und auf dem Wasser."},
+              {t:"Sicherungspunkte und Schussfeld klären", d:"Stellungen an Land, Winkel zum Wasser, Hintergrund, Sperrung des Schiffsverkehrs."},
+              {t:"Zugriff mit Rettungssicherung", d:"Kein Zugriff über Wasser ohne begleitendes Sicherungsboot und benannten Beobachter für Personen im Wasser."},
+              {t:"Bergen und erwärmen", d:"Jede Person aus dem Wasser sofort bergen, Nässe entfernen, aktiv erwärmen, auch ohne erkennbare Beschwerden ärztlich prüfen lassen."},
+              {t:"Ausstattung prüfen", d:"Nasse Waffen, Funk, Munition und Schutzausstattung kontrollieren, trocknen, instand setzen und dokumentieren."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Einsatzleitung Wasser", d:"Führt die gemeinsame Lage mit den Fachdiensten, entscheidet über Bewegung auf und am Wasser."},
+              {n:"Bootsführer", d:"Verantwortet Fahrmanöver, Standfestigkeit und Sicherheit an Bord; sein Veto zur Bootsführung gilt."},
+              {n:"Sicherungsboot / Rettungsschwimmer", d:"Ausschließlich für Personen im Wasser zuständig, nicht in den Zugriff eingebunden."},
+              {n:"Zugriffstrupp", d:"Reduzierte Beladung, Auftrieb, klare Reihenfolge beim Übersetzen und Aufentern."},
+              {n:"Beobachter", d:"Zählt Personen, beobachtet die Wasserfläche, markiert Eintauchstellen, meldet sofort."},
+              {n:"Medic", d:"Rechnet mit Unterkühlung, Beinaheertrinken und verzögerten Verläufen; hält Wiedererwärmung und Transport bereit."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Schwere Schutzausstattung ohne Auftriebsmittel und ohne Schnelltrennung.",
+                  "Zugriff über Wasser ohne Sicherungsboot und ohne benannten Beobachter.",
+                  "Unterkühlung unterschätzt: Personen gelten als unverletzt, weil sie ansprechbar sind.",
+                  "Schussabgabe über die Wasserfläche ohne Bewertung von Winkel und Hintergrund.",
+                  "Boot als Deckung behandelt.",
+                  "Nasse Ausstattung wird ohne Prüfung weiterverwendet.",
+                  "Zuständigkeiten mit den Fachdiensten erst am Ufer geklärt."] }
+        ]
+      }
+    ]
+  },
+
+  spezialisierungen: {
+    id:"spezialisierungen",
+    kicker:"Innerhalb der Einheit",
+    title:["Spezialisierungen und ","Zusatzfunktionen"],
+    intro:"Spezialisierungen sind keine eigenen Taktiken, sondern Zusatzqualifikationen innerhalb derselben Verfahren. Jeder Spezialist ist zuerst Einsatzkraft der Einheit und übernimmt seine Zusatzaufgabe dann, wenn die Lage es zulässt. Die Einheit muss jede Spezialistenaufgabe zumindest in ihren Grundzügen kennen — der Spezialist kann ausfallen.",
+    modules:[
+      {
+        id:"medic", abbr:"MEDIC", title:"Taktische Notfallversorgung",
+        subtitle:"Lebensrettende Versorgung im Wirkbereich, Ausbildung des Teams in Selbst- und Kameradenhilfe, geordnete Übergabe an den Rettungsdienst.",
+        merksatz:"Erst die Lage, dann die Wunde — aber die kritische Blutung wartet nicht.",
+        tabs:[
+          { label:"Auftrag", type:"text",
+            data:"Der Medic bringt notfallmedizinische Versorgung dorthin, wo der Rettungsdienst nicht arbeiten kann. Er ist zuerst Einsatzkraft und dann Versorger: Wer im Wirkbereich behandelt, statt die Lage zu lösen, erzeugt weitere Verletzte. Der zweite, ebenso wichtige Auftrag ist die Ausbildung — im Ernstfall versorgt in den ersten Minuten nicht der Medic, sondern der Nachbar.",
+            extra:["Sicherstellen, dass jede Kraft ihr eigenes Verbandmaterial an derselben, allen bekannten Stelle trägt.","Team in Selbst- und Kameradenhilfe ausbilden und regelmäßig nachschulen.","Material verwalten, prüfen und nach jedem Einsatz sofort wieder auffüllen.","Übergabe an den Rettungsdienst strukturiert und vollständig führen."] },
+          { label:"MARCH", type:"steps",
+            data:[
+              {t:"M — Massive Blutung", d:"Kritische äußere Blutung sofort stoppen: Abbindesystem hoch und fest, Wundversorgung mit Druck, Uhrzeit dokumentieren."},
+              {t:"A — Atemweg", d:"Atemweg freimachen und offen halten, stabile Lagerung oder Hilfsmittel nach Ausbildungsstand."},
+              {t:"R — Atmung", d:"Brustkorb prüfen, penetrierende Verletzungen abdecken, Spannungspneumothorax erkennen und melden."},
+              {t:"C — Kreislauf", d:"Weitere Blutungsquellen suchen, Kreislauf beurteilen, Zugang und Volumen nach Ausbildungsstand und Weisung."},
+              {t:"H — Wärme und Kopf", d:"Wärmeerhalt konsequent — auch im Sommer. Bewusstseinslage und Schädel-Hirn-Trauma prüfen und dokumentieren."}
+            ] },
+          { label:"Phasen", type:"steps",
+            data:[
+              {t:"Versorgung unter Wirkung", d:"Nur, was Leben unmittelbar rettet: Deckung herstellen oder Person herausbringen, kritische Blutung abbinden. Alles andere wartet."},
+              {t:"Versorgung im gesicherten Bereich", d:"Vollständiges MARCH-Schema, Nachkontrolle des Abbindesystems, Wärmeerhalt, Dokumentation, Vorbereitung des Transports."},
+              {t:"Versorgung während des Transports", d:"Zustand überwachen, Maßnahmen fortführen, Übergabe vorbereiten, Zielklinik über die Leitstelle abstimmen."}
+            ] },
+          { label:"Grundsätze", type:"list",
+            data:["Die Lage bestimmt den Versorgungsumfang, nicht der Wunsch zu helfen.",
+                  "Kritische Blutung schlägt jede andere Maßnahme — Sekunden zählen.",
+                  "Versorgt wird unter Deckung; ist keine da, wird die Person zuerst bewegt.",
+                  "Jede Kraft trägt ihr eigenes Material an einheitlicher Stelle und kennt dessen Anwendung an sich selbst.",
+                  "Uhrzeiten werden festgehalten — insbesondere jede Abbindung.",
+                  "Übergabe strukturiert: Verletzungsmechanismus, festgestellte Verletzungen, Vitalzeichen, durchgeführte Maßnahmen.",
+                  "Nach dem Einsatz: Material auffüllen, Verbrauch dokumentieren, Erkenntnisse in die nächste Ausbildung geben."] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Versorgung beginnt im Wirkbereich, statt die Person herauszubringen.",
+                  "Verbandmaterial an unterschiedlichen Stellen getragen — im Ernstfall nicht auffindbar.",
+                  "Abbindesystem zu locker, zu tief oder zu spät angelegt.",
+                  "Keine Uhrzeit dokumentiert.",
+                  "Wärmeerhalt vergessen.",
+                  "Übergabe an den Rettungsdienst ohne Struktur — Informationen gehen verloren.",
+                  "Der Medic bindet sich fest und fehlt der Formation."] }
+        ]
+      },
+      {
+        id:"breaching", abbr:"Breaching", title:"Zugangstechnik",
+        subtitle:"Herstellen von Zugängen — mechanisch, hydraulisch, ballistisch, thermisch oder mit gesonderten Verfahren.",
+        merksatz:"Erst probieren, dann brechen — und immer einen zweiten Weg.",
+        tabs:[
+          { label:"Auftrag", type:"text",
+            data:"Der Breacher stellt den Zugang her und gibt damit den Takt für den gesamten Zugriff vor: Sein Countdown ist das Startsignal, seine Rückmeldung das Freigabezeichen. Die eigentliche Leistung liegt nicht im Werkzeug, sondern in der Türkunde — welches Türblatt, welcher Rahmen, welche Öffnungsrichtung, welches Schloss, welche Zusatzsicherungen. Ein falsch eingeschätzter Zugang kostet mehr Zeit als jede Vorbereitung.",
+            extra:["Verfahren wählen: mechanisch, hydraulisch, ballistisch, thermisch oder gesonderte Verfahren nach Berechtigung.","Immer ein Rückfallverfahren bereithalten und benennen.","Werkzeuge geprüft, vollständig, transportfähig und im Zugriff.","Nach der Öffnung sofort aus dem Zwangspunkt und Werkzeug aus dem Weg räumen."] },
+          { label:"Türkunde", type:"list",
+            data:["Öffnungsrichtung: nach innen oder nach außen — bestimmt Werkzeug und Position.",
+                  "Anschlagseite und Bandlage: Wo sitzen die Scharniere, wo das Schloss?",
+                  "Material von Türblatt, Rahmen und Wand — eine stabile Tür in einer schwachen Wand ist kein Hindernis.",
+                  "Schloss, Mehrfachverriegelung, Zusatzschlösser, Riegel, Ketten, Panikbeschlag.",
+                  "Glasanteil, Sichtfenster, Gitter, Rollläden, Vergitterung.",
+                  "Hinweise auf Verbarrikadierung oder Präparierung — dann anderes Verfahren und größerer Abstand.",
+                  "Alternative Zugänge: zweite Tür, Fenster, Nebenraum, Dach, Kellerzugang, Schlüssel beim Berechtigten."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Aufklärung und Türkunde", d:"Zugang persönlich in Augenschein nehmen oder verlässlich beschreiben lassen; Foto und Skizze sind Standard."},
+              {t:"Verfahren und Rückfallverfahren wählen", d:"Das einfachste ausreichende Verfahren zuerst. Der zweite Weg wird benannt, bevor der erste beginnt."},
+              {t:"Material prüfen", d:"Werkzeug vollständig, funktionsfähig, geladen, gesichert; Zuständigkeit für jedes Teil geklärt."},
+              {t:"Anmarsch und Position", d:"Breacher und Sicherung nehmen ihre Plätze, Formation steht außerhalb des Wirk- und Splitterbereichs."},
+              {t:"Ankündigung und Freigabe", d:"Verfahren ansagen, Wirkbereich freimelden, Freigabe der Führung abwarten, Countdown laut und einheitlich."},
+              {t:"Öffnen", d:"Öffnung durchführen; bei Fehlschlag sofort und ohne Diskussion in das Rückfallverfahren wechseln."},
+              {t:"Öffnung räumen", d:"Breacher tritt unmittelbar aus der Öffnung heraus, Werkzeug wird abgelegt, ohne den Weg zu blockieren."},
+              {t:"Werkzeug sichern", d:"Nach dem Zugriff einsammeln, prüfen, zählen — kein Werkzeug bleibt im Objekt zurück."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Breacher", d:"Türkunde, Verfahrenswahl, Ankündigung, Öffnung, Rückfallverfahren, Werkzeugverantwortung."},
+              {n:"Sicherung des Breachers", d:"Deckt ihn während der gesamten Arbeit; der Breacher hat währenddessen keine eigene Sicherung."},
+              {n:"Zugriffstrupp", d:"Steht außerhalb des Wirkbereichs, geht erst auf das vereinbarte Zeichen und verlässt den Zwangspunkt sofort."},
+              {n:"Führung", d:"Erteilt die Freigabe, kennt Verfahren und Rückfallverfahren, kann jederzeit abbrechen."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Werkzeugwahl ohne Türkunde.",
+                  "Kein Rückfallverfahren benannt.",
+                  "Unangekündigte Öffnung — der Trupp ist nicht bereit oder steht falsch.",
+                  "Team steht im Wirk- oder Splitterbereich.",
+                  "Der Breacher blockiert nach der Öffnung den Zugang.",
+                  "Verschlossene Tür wird gebrochen, obwohl sie nicht abgeschlossen war.",
+                  "Werkzeug bleibt im Weg oder im Objekt liegen."] }
+        ]
+      },
+      {
+        id:"sicherungsschuetze", abbr:"Sicherung", title:"Sicherungsschütze",
+        subtitle:"Beobachtung, Lagemeldung und — als Ausnahme — präziser Schusseinsatz aus vorbereiteter Stellung.",
+        merksatz:"Das Auge der Einheit: der Schuss ist die Ausnahme, die Meldung die Regel.",
+        tabs:[
+          { label:"Auftrag", type:"text",
+            data:"Die Hauptleistung des Sicherungsschützen ist die Aufklärung. Er sieht, was der Zugriffstrupp nicht sehen kann, und liefert der Führung das Lagebild, auf dem Entscheidungen beruhen — einschließlich der Auslösekriterien für einen Notzugriff. Der Schusseinsatz ist der seltene Ausnahmefall und immer eine Entscheidung der Führung, nie eine des Schützen allein.",
+            extra:["Beobachtungsauftrag schriftlich: Sektor, Beobachtungsschwerpunkte, Meldeweg, Meldeintervall.","Auslösekriterien und Freigaberegelung schriftlich und allen Beteiligten bekannt.","Der Zugriffstrupp kennt Stellung, Sektor und Wirkbereich des Schützen.","Ablösung von Beginn an eingeplant — Konzentration, Kälte und Zwangshaltung begrenzen die Standzeit."] },
+          { label:"Stellungswahl", type:"list",
+            data:["Schussfeld und Beobachtungsfeld decken den Auftrag ab — nicht nur den bequemsten Winkel.",
+                  "Deckung nach vorne und zur Seite, Sichtschutz gegen Entdeckung.",
+                  "Unauffälliger Zu- und Abgang, jederzeit nutzbar, auch bei Lageverschlechterung.",
+                  "Hintergrund des möglichen Wirkbereichs bewertet: Was liegt hinter dem Ziel?",
+                  "Glas, Gitter, Vergitterung, Fliegennetze und Zwischenscheiben verändern die Trefferlage — vorher bewerten.",
+                  "Distanzen und feste Referenzpunkte werden vermessen und notiert.",
+                  "Wetter, Licht, Sonnenstand, Wind und deren Verlauf über die Standzeit einplanen.",
+                  "Doppelbesetzung wo möglich: Schütze und Beobachter halten sich gegenseitig konzentriert."] },
+          { label:"Ablauf", type:"steps",
+            data:[
+              {t:"Auftrag entgegennehmen", d:"Sektor, Beobachtungsschwerpunkte, Meldeweg, Auslösekriterien, Freigaberegelung, Ablöseplanung."},
+              {t:"Erkundung", d:"Mögliche Stellungen prüfen, Zu- und Abgänge festlegen, Alternativstellung bestimmen."},
+              {t:"Stellungsbezug", d:"Unauffällig, gesichert, ohne den eigenen Zugang preiszugeben."},
+              {t:"Einmessen", d:"Distanzen, Referenzpunkte, Hindernisse, Glasflächen, tote Winkel erfassen und skizzieren."},
+              {t:"Bereitschaft melden", d:"Stellung bezogen, Sektor eingesehen, Erkenntnisse zur Ausgangslage."},
+              {t:"Dauerbeobachtung", d:"Regelmäßige Lagemeldung auch ohne Veränderung; Veränderungen sofort, kurz und eindeutig."},
+              {t:"Wirken auf Anordnung", d:"Nur auf Freigabe nach den festgelegten Kriterien; Ziel, Umfeld und Hintergrund unmittelbar vor der Abgabe erneut bewertet."},
+              {t:"Wirkungsmeldung und Ablösung", d:"Beobachtete Wirkung melden, Beobachtung fortsetzen, geordnete Ablösung und Übergabe der Stellung."}
+            ] },
+          { label:"Rollen", type:"roles",
+            data:[
+              {n:"Schütze", d:"Führt Waffe und Stellung, beobachtet, meldet, wirkt ausschließlich auf Freigabe."},
+              {n:"Beobachter", d:"Zweites Augenpaar, Fernoptik, Protokoll, Zeitnahme, Rundumsicherung der Stellung."},
+              {n:"Führung", d:"Erteilt Auftrag und Freigabe, hält Auslösekriterien aktuell, ordnet Ablösung an."},
+              {n:"Verbindung zum Zugriffstrupp", d:"Stellt sicher, dass Zugriff und Sicherung voneinander wissen: Positionen, Sektoren, Bewegungsrichtungen."}
+            ] },
+          { label:"Fehlerbilder", type:"warn",
+            data:["Stellung ohne gesicherten Rückweg bezogen.",
+                  "Meldungen zu lang, zu spät oder mehrdeutig.",
+                  "Hintergrund und Durchschuss nicht bewertet.",
+                  "Keine Ablöseplanung — die Beobachtungsleistung bricht unbemerkt ein.",
+                  "Auslösekriterien nur mündlich vereinbart.",
+                  "Der Zugriffstrupp kennt die Stellung nicht und bewegt sich in den Wirkbereich.",
+                  "Glasflächen oder Gitter im Schussfeld nicht erkannt."] }
+        ]
+      }
+    ]
+  },
+
+  glossar:[
+    {t:"BuD", d:"Betreten und Durchsuchen — planmäßiges, methodisches Erschließen und Absuchen eines Objekts, wenn Zeit vorhanden ist."},
+    {t:"NIT", d:"Notintervention — sofortiges Eingreifen in ein laufendes Tötungs- oder schwerstes Gewaltgeschehen."},
+    {t:"Notzugriff", d:"Aus der Lage heraus ausgelöster Zugriff bei unmittelbarer Lebensgefahr; Gegenstück zum geplanten Zugriff."},
+    {t:"Zwangspunkt", d:"Enge Stelle, die zwingend passiert werden muss und dadurch berechenbar wird: Tür, Flur, Treppe, Ein- und Ausstieg."},
+    {t:"Deckung", d:"Struktur, die Geschosse tatsächlich aufhält. Nicht zu verwechseln mit Sichtschutz."},
+    {t:"Sichtschutz", d:"Verdeckt nur die Sicht: Trockenbau, Sitzlehne, Türblatt, Vorhang, Fahrzeugtür."},
+    {t:"Sektor", d:"Zugewiesener Verantwortungsbereich einer Kraft — mit dem Nachbarsektor überlappend, nie lückenhaft."},
+    {t:"Raumdominanz", d:"Zustand, in dem alle Winkel eines Raumes eingesehen, alle Personen gebunden und alle Zugänge gesichert sind."},
+    {t:"Stack", d:"Geschlossene Bereitstellungsformation vor einem Zugang, aus der heraus betreten wird."},
+    {t:"Winkel arbeiten", d:"Schrittweises Einsehen eines Raumes von außen, bevor er betreten wird."},
+    {t:"Türkunde", d:"Systematische Beurteilung eines Zugangs: Öffnungsrichtung, Anschlag, Material, Schloss, Zusatzsicherungen."},
+    {t:"Rückfallverfahren", d:"Vorher festgelegtes Ersatzverfahren, wenn das gewählte nicht funktioniert — beim Breaching zwingend."},
+    {t:"MARCH", d:"Merkschema der taktischen Notfallversorgung: Massive Blutung, Atemweg, Atmung (Respiration), Kreislauf (Circulation), Wärme und Kopf (Hypothermie/Head)."},
+    {t:"IFAK", d:"Persönliches Verbandpäckchen jeder Einsatzkraft — einheitliche Trageposition ist Voraussetzung für die Kameradenhilfe."},
+    {t:"Care under Fire", d:"Versorgung unter Wirkung: ausschließlich lebensrettende Sofortmaßnahmen, vorrangig kritische Blutung."},
+    {t:"Auslösewort", d:"Vereinbartes, eindeutiges Signal zur Auslösung eines Zugriffs; das Gegenstück ist das Abbruchwort."},
+    {t:"Fahrstromabschaltung", d:"Abschalten der Oberleitung oder Stromschiene durch den Verkehrsbetrieb; ohne quittierte Bestätigung und Erdung wird kein Gleis betreten."},
+    {t:"Bahnerdung", d:"Erden abgeschalteter Fahrleitungen; Voraussetzung für das sichere Betreten des Gleisbereichs."},
+    {t:"Auftriebsmittel", d:"Schwimmhilfe, die zusammen mit Schutzausstattung getragen wird; Schnelltrennung muss möglich und geübt sein."},
+    {t:"Auswertung (AAR)", d:"Strukturierte Nachbesprechung: Auftrag, Ablauf, Abweichung, Erkenntnis — ohne Schuldzuweisung."}
+  ],
+
+  quiz:[
+    {q:"Was unterscheidet die Notintervention (NIT) grundsätzlich vom Betreten und Durchsuchen (BuD)?",
+     a:["NIT wird nur nachts eingesetzt","Bei NIT läuft Gewalt gegen Leib und Leben gerade ab — Zeit ist der begrenzende Faktor","NIT braucht mehr Kräfte als BuD","Bei NIT wird auf Schutzausstattung verzichtet"],
+     c:1, topic:"Grundtaktiken · NIT", why:"BuD setzt voraus, dass Zeit vorhanden ist und methodisch gearbeitet werden kann. Die Notintervention greift ein, während Gewalt abläuft — auch mit reduzierter Kräftezahl und unvollständigem Lagebild."},
+    {q:"Wie wird bei der Notintervention mit angetroffenen Verletzten umgegangen?",
+     a:["Sie werden sofort vollständig versorgt","Sie werden zunächst passiert, gemeldet und gekennzeichnet; nachfolgende Kräfte versorgen","Der Trupp teilt sich auf","Die Intervention wird abgebrochen"],
+     c:1, topic:"Grundtaktiken · NIT", why:"Bindet sich der Interventionstrupp an einen Verletzten, läuft das Geschehen weiter. Standort melden, kennzeichnen, weitergehen — die Versorgung übernehmen nachrückende Kräfte."},
+    {q:"Welche Aussage zu Deckung und Sichtschutz trifft zu?",
+     a:["Eine Fahrzeugtür ist verlässliche Deckung","Sitzlehnen im Zug bieten Schutz vor Geschossen","Sichtschutz nimmt nur die Sicht und hält keine Geschosse auf","Trockenbauwände zählen zur Deckung"],
+     c:2, topic:"Grundprinzipien", why:"Deckung hält Geschosse auf, Sichtschutz nicht. Fahrzeugtüren, Trockenbau, Türblätter und Sitzlehnen sind Sichtschutz — im ÖPNV ist das besonders folgenreich."},
+    {q:"Was gilt vor dem Betreten des Gleisbereichs?",
+     a:["Sichtprüfung der Oberleitung genügt","Abschaltung und Erdung müssen durch die Leitstelle des Verkehrsbetriebs bestätigt und quittiert sein","Der Trupp entscheidet eigenständig","Es genügt, wenn kein Zug zu sehen ist"],
+     c:1, topic:"Besonderheiten · ÖPNV", why:"Fahrstrom wird ausschließlich durch den Verkehrsbetrieb abgeschaltet und geerdet. Ohne ausdrücklich bestätigte und quittierte Rückmeldung wird kein Gleis betreten."},
+    {q:"Welche Reihenfolge gilt in der Messer-Intervention?",
+     a:["Zugriff, Distanz, Kommunikation","Abstand, Deckung, Zeit","Distanzmittel, Ansprache, Rückzug","Fesselung, Entwaffnung, Versorgung"],
+     c:1, topic:"Grundtaktiken · Messer", why:"Reaktion ist der Aktion unterlegen: Distanz und Barrieren erzeugen die Zeit, die für Kräfteaufbau, Kommunikation und einen koordinierten Eingriff gebraucht wird."},
+    {q:"Wann wird der Notzugriffsplan erstellt?",
+     a:["Wenn die Lage kippt","Nach der ersten Verhandlungsrunde","Ab dem ersten Moment der Lage und laufend fortgeschrieben","Erst nach Eintreffen der Führung"],
+     c:2, topic:"Grundtaktiken · Notzugriff", why:"Improvisiert wird nur die Auslösung, nie das Verfahren. Der Plan steht ab Minute eins und wird bei jeder Lageänderung fortgeschrieben und bestätigt."},
+    {q:"Wofür steht das M in MARCH?",
+     a:["Monitoring","Massive Blutung","Mobilisation","Medikation"],
+     c:1, topic:"Spezialisierung · MEDIC", why:"Die kritische äußere Blutung wird zuerst gestoppt — sie ist die häufigste vermeidbare Todesursache und lässt sich in Sekunden beherrschen."},
+    {q:"Was gehört zwingend zu jedem Breaching-Verfahren?",
+     a:["Ein zweiter Breacher","Ein benanntes Rückfallverfahren","Explosive Zugangstechnik","Eine Kamera an der Tür"],
+     c:1, topic:"Spezialisierung · Breaching", why:"Der zweite Weg wird benannt, bevor der erste beginnt. Scheitert die Öffnung, wird ohne Diskussion gewechselt — sonst steht der Trupp im Zwangspunkt fest."},
+    {q:"Worin besteht die Hauptleistung des Sicherungsschützen?",
+     a:["Im präzisen Schuss","In der Beobachtung und Lagemeldung","In der Absicherung des Anmarschs","In der Führung des Zugriffs"],
+     c:1, topic:"Spezialisierung · Sicherungsschütze", why:"Der Schusseinsatz ist die Ausnahme. Die Regel ist die Aufklärung: Sie liefert das Lagebild und die Auslösekriterien, auf denen die Führung entscheidet."},
+    {q:"Was gilt für Einsätze am und auf dem Wasser?",
+     a:["Schutzausstattung wird immer vollständig getragen","Boote bieten verlässliche Deckung","Auftriebsmittel und Sicherungsboot sind Voraussetzung für die Bewegung über Wasser","Unterkühlung ist erst nach einer Stunde relevant"],
+     c:2, topic:"Besonderheiten · Wasser", why:"Schutzausstattung wird im Wasser zur Lebensgefahr. Ohne getragenen Auftrieb, Schnelltrennung und ein bereitstehendes Sicherungsboot bewegt sich niemand über Wasser."}
+  ]
+};
+
+/* ==========================================================================
+   2 · FEDER-INTEGRATOR UND TICKER
+   --------------------------------------------------------------------------
+   Ein fester Zeitschritt (1/60 s), Masse 1 — dasselbe Modell wie react-spring
+   im Original-Entwurf. Sämtliche Bewegung der Seite läuft darüber; es gibt
+   bewusst keine CSS-Keyframes.
+   ========================================================================== */
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+class Spring{
+  constructor(x, cfg){ this.x=x; this.v=0; this.target=x; this.cfg=cfg; this.rest=true; this.acc=0; this.onRest=null; }
+  to(t){ if(t===this.target && this.rest) return; this.target=t; this.rest=false; }
+  jump(t){ this.x=this.target=t; this.v=0; this.rest=true; }
+  step(dt){
+    if(this.rest) return this.x;
+    const h=1/60, k=this.cfg.tension, c=this.cfg.friction;
+    this.acc=Math.min(this.acc+dt, 0.25);
+    while(this.acc>=h){
+      const prev=this.x;
+      this.v += (-k*(this.x-this.target) - c*this.v)*h;
+      this.x += this.v*h;
+      this.acc-=h;
+      if(this.cfg.clamp && ((prev<this.target&&this.x>this.target)||(prev>this.target&&this.x<this.target))){
+        this.x=this.target; this.v=0; break;
+      }
+    }
+    if(Math.abs(this.x-this.target)<0.0008 && Math.abs(this.v)<0.0008){
+      this.x=this.target; this.v=0; this.rest=true;
+      if(this.onRest){ const f=this.onRest; this.onRest=null; f(); }
+    }
+    return this.x;
+  }
+}
+
+const REVEAL_SPRING = {tension:80, friction:26};
+const HOVER_SPRING  = {tension:240, friction:30};
+const LIFT_SPRING   = {tension:110, friction:24, clamp:true};
+const POINTER_SPRING= {tension:120, friction:26};
+const FIELD_SPRING  = {tension:40, friction:26};
+
+const ticks = new Set();
+let lastT = performance.now();
+function loop(now){
+  const dt = Math.min((now-lastT)/1000, 1/20); lastT = now;
+  ticks.forEach(fn => fn(dt));
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/** Eine Feder 0→1, die eine Interpolation antreibt. */
+function animate(apply, {delay=0, cfg=REVEAL_SPRING}={}){
+  const s = new Spring(0, cfg);
+  apply(0);
+  let waited = 0, started = false, live = true;
+  const tick = dt => {
+    if(!started){ waited += dt*1000; if(waited < delay) return; started = true; s.to(1); }
+    const v = s.step(dt);
+    apply(v);
+    if(s.rest && live){ live = false; ticks.delete(tick); }
+  };
+  ticks.add(tick);
+  return { finish(){ ticks.delete(tick); apply(1); } };
+}
+const lerp = (a,b,t) => a + (b-a)*t;
+
+/* ==========================================================================
+   3 · HALBTON-FELD (WebGL2)
+   --------------------------------------------------------------------------
+   Die Quelle ist keine Videodatei, sondern eine lokal gezeichnete Leinwand mit
+   dem Einheitszeichen. Das hält die Seite vollständig offline lauffähig — ein
+   Bild von der Platte würde beim Öffnen per file:// die Textur „verunreinigen“
+   und WebGL zum Abbruch bringen. Die Zeigerposition dreht das Zeichen
+   (Ersatz für das Scrubbing des Original-Clips) und legt es zusätzlich in die
+   Perspektive.
+   ========================================================================== */
+const VERT = `#version 300 es
+in vec2 a_position;
+out vec2 v_uv;
+void main(){
+  v_uv = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+
+const FRAG = `#version 300 es
+precision highp float;
+in vec2 v_uv;
+out vec4 fragColor;
+uniform sampler2D u_source;
+uniform vec2 u_resolution;
+uniform vec2 u_sourceSize;
+uniform float u_cell;
+uniform float u_gain;
+uniform float u_gamma;
+uniform float u_dotScale;
+uniform float u_softness;
+uniform float u_mirror;
+uniform vec2 u_tilt;
+uniform float u_inkSpread;
+uniform float u_reveal;
+uniform float u_revealBand;
+uniform vec3 u_inkLight;
+uniform vec3 u_inkMid;
+uniform vec3 u_inkDeep;
+uniform vec3 u_bg;
+
+vec2 coverUv(vec2 uv, vec2 canvas, vec2 tex){
+  float canvasAspect = canvas.x / canvas.y;
+  float texAspect = tex.x / tex.y;
+  vec2 scale = canvasAspect > texAspect
+    ? vec2(1.0, texAspect / canvasAspect)
+    : vec2(canvasAspect / texAspect, 1.0);
+  return (uv - 0.5) * scale + 0.5;
+}
+float luma(vec3 color){ return dot(color, vec3(0.2126, 0.7152, 0.0722)); }
+
+/* Projektive Teilung statt Scherung: die ferne Seite staucht, die nahe spreizt.
+   Nur die Abtastposition wandert — das Punktraster bleibt bildschirmfest. */
+vec2 leanUv(vec2 uv, vec2 tilt){
+  vec2 centred = uv - 0.5;
+  float w = max(1.0 + dot(centred, tilt), 0.2);
+  return centred / w + 0.5;
+}
+
+void main(){
+  vec2 cells = max(u_resolution / u_cell, vec2(1.0));
+  vec2 cellCenter = (floor(v_uv * cells) + 0.5) / cells;
+  vec2 inCell = fract(v_uv * cells);
+
+  vec2 leaned = leanUv(cellCenter, u_tilt);
+  vec2 sampleAt = vec2(u_mirror > 0.5 ? 1.0 - leaned.x : leaned.x, leaned.y);
+  vec2 uv = coverUv(sampleAt, u_resolution, u_sourceSize);
+  vec3 src = texture(u_source, clamp(uv, 0.0, 1.0)).rgb;
+  float lum = pow(clamp(luma(src) * u_gain, 0.0, 1.0), u_gamma);
+
+  float front = u_reveal * (1.0 + u_revealBand);
+  float wobble = sin(cellCenter.x * 6.2831853) * 0.02;
+  float local = clamp((front - (cellCenter.y + wobble)) / max(u_revealBand, 1e-4), 0.0, 1.0);
+  lum *= local;
+
+  float feather = max(u_softness, 0.5 / max(u_cell, 1.0));
+  float maxRadius = max(0.5 - feather, 0.0);
+  float radius = mix(-feather, maxRadius * clamp(u_dotScale, 0.0, 1.0), lum);
+  float mask = 1.0 - smoothstep(-feather, feather, length(inCell - 0.5) - radius);
+
+  float diagonal = (cellCenter.x + (1.0 - cellCenter.y)) * 0.5;
+  float t = clamp(0.5 + (diagonal - 0.5) * u_inkSpread, 0.0, 1.0);
+  vec3 ink = mix(
+    mix(u_inkLight, u_inkMid, clamp(t * 2.0, 0.0, 1.0)),
+    u_inkDeep,
+    clamp(t * 2.0 - 1.0, 0.0, 1.0)
+  );
+  fragColor = vec4(mix(u_bg, ink, mask), 1.0);
+}`;
+
+/* Feste Werte des Entwurfs. */
+const FIELD = {
+  cellSize:9, dotScale:.72, softness:0, gain:1.9, gamma:.62,
+  mirror:false, tilt:.24, inkSpread:2.5, revealBand:.28, maxDpr:2, scrubSteps:48
+};
+const INK = {
+  bg:[0.941,0.953,0.957],
+  light:[0.682,1.000,0.000],
+  mid:[0.000,0.741,0.443],
+  deep:[0.000,0.459,0.282]
+};
+
+/* ---- Quelle: das Einheitszeichen, gezeichnet ---------------------------- */
+const SRC_W = 640, SRC_H = 400;
+let logoImage = null;      /* optionales echtes Logo — siehe LOGO_SRC weiter unten */
+let fieldNeedsUpload = true;
+const srcCanvas = document.createElement("canvas");
+srcCanvas.width = SRC_W; srcCanvas.height = SRC_H;
+const sctx = srcCanvas.getContext("2d", {willReadFrequently:false});
+
+/**
+ * `yaw` von -1 bis 1 dreht das Zeichen um die Hochachse. Zusammen mit der
+ * perspektivischen Neigung im Shader folgt das Zeichen dem Zeiger.
+ */
+function drawSource(yaw){
+  const g = sctx;
+  g.setTransform(1,0,0,1,0,0);
+  g.fillStyle = "#000"; g.fillRect(0,0,SRC_W,SRC_H);
+
+  const cx = SRC_W*0.55, cy = SRC_H*0.48;
+  g.save();
+  g.translate(cx, cy);
+  g.rotate(-0.055 + yaw*0.045);
+  g.scale(1 - Math.abs(yaw)*0.16, 1);
+  g.translate(yaw*26, 0);
+
+  /* Weicher Lichthof — er erzeugt die Punktgrößen zwischen „aus“ und „voll“,
+     ohne die eine harte Kante ein Halbton flach wirkt. */
+  const glow = g.createRadialGradient(0,0,20, 0,0,300);
+  glow.addColorStop(0,"rgba(255,255,255,.22)");
+  glow.addColorStop(.6,"rgba(255,255,255,.06)");
+  glow.addColorStop(1,"rgba(255,255,255,0)");
+  g.fillStyle = glow;
+  g.beginPath(); g.arc(0,0,300,0,Math.PI*2); g.fill();
+
+  /* Die Platte des Aufnähers, als Kontur. */
+  g.strokeStyle = "rgba(255,255,255,.75)";
+  g.lineWidth = 7;
+  const pw = 360, ph = 202, r = 13;
+  g.beginPath();
+  g.moveTo(-pw/2+r, -ph/2);
+  g.arcTo(pw/2,-ph/2, pw/2, ph/2, r);
+  g.arcTo(pw/2, ph/2, -pw/2, ph/2, r);
+  g.arcTo(-pw/2, ph/2, -pw/2,-ph/2, r);
+  g.arcTo(-pw/2,-ph/2, pw/2,-ph/2, r);
+  g.closePath(); g.stroke();
+
+  /* Liegt ein echtes Logo vor, ersetzt es Kontur und Schriftzug. */
+  if(logoImage){
+    const w = 452, h = w * (logoImage.height / logoImage.width || .6);
+    try{ g.drawImage(logoImage, -w/2, -h/2, w, h); }catch(_){ logoImage = null; }
+    if(logoImage){ g.restore(); return; }
+  }
+
+  /* Der Schriftzug. */
+  g.textAlign = "center";
+  g.textBaseline = "middle";
+  g.fillStyle = "#fff";
+  let size = 150;
+  g.font = `900 ${size}px "Arial Black","Helvetica Neue",Impact,"General Sans",sans-serif`;
+  const target = pw - 56;
+  const w = g.measureText("ÜKDO").width || target;
+  size = Math.min(size, size * target / w);
+  g.font = `900 ${size}px "Arial Black","Helvetica Neue",Impact,"General Sans",sans-serif`;
+  g.fillText("ÜKDO", 0, 6);
+
+  g.strokeStyle = "rgba(255,255,255,.9)";
+  g.lineWidth = 2;
+  g.strokeText("ÜKDO", 0, 6);
+  g.restore();
+
+  /* Unterzeile — bleibt in der Halbtonauflösung eine Andeutung, kein Text. */
+  g.save();
+  g.globalAlpha = .5;
+  g.fillStyle = "#fff";
+  g.fillRect(cx-130, cy+128, 260, 5);
+  g.restore();
+}
+drawSource(0);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>drawSource(lastYawDrawn));
+let lastYawDrawn = 0;
+
+/* ---- Renderer ----------------------------------------------------------- */
+const fieldCanvas = document.getElementById("field-canvas");
+const revealSpring = new Spring(0, FIELD_SPRING);
+const ptProgress = new Spring(0.5, POINTER_SPRING);
+const ptTiltX = new Spring(0, POINTER_SPRING);
+const ptTiltY = new Spring(0, POINTER_SPRING);
+
+(function initField(){
+  const gl = fieldCanvas.getContext("webgl2", {
+    alpha:false, antialias:false, depth:false, stencil:false, powerPreference:"high-performance"
+  });
+  if(!gl){ fieldCanvas.style.display="none"; return; }
+
+  const compile = (type, src) => {
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src); gl.compileShader(sh);
+    if(!gl.getShaderParameter(sh, gl.COMPILE_STATUS)){ console.error(gl.getShaderInfoLog(sh)); return null; }
+    return sh;
+  };
+  const vs = compile(gl.VERTEX_SHADER, VERT), fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if(!vs || !fs){ fieldCanvas.style.display="none"; return; }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog, gl.LINK_STATUS)){ console.error(gl.getProgramInfoLog(prog)); fieldCanvas.style.display="none"; return; }
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "a_position");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+  const U = n => gl.getUniformLocation(prog, n);
+  const u = {
+    source:U("u_source"), resolution:U("u_resolution"), sourceSize:U("u_sourceSize"),
+    cell:U("u_cell"), gain:U("u_gain"), gamma:U("u_gamma"), dotScale:U("u_dotScale"),
+    softness:U("u_softness"), mirror:U("u_mirror"), tilt:U("u_tilt"), inkSpread:U("u_inkSpread"),
+    reveal:U("u_reveal"), revealBand:U("u_revealBand"),
+    inkLight:U("u_inkLight"), inkMid:U("u_inkMid"), inkDeep:U("u_inkDeep"), bg:U("u_bg")
+  };
+  gl.uniform1i(u.source, 0);
+  gl.uniform2f(u.sourceSize, SRC_W, SRC_H);
+  gl.uniform1f(u.dotScale, FIELD.dotScale);
+  gl.uniform1f(u.softness, FIELD.softness);
+  gl.uniform1f(u.gain, FIELD.gain);
+  gl.uniform1f(u.gamma, FIELD.gamma);
+  gl.uniform1f(u.mirror, FIELD.mirror ? 1 : 0);
+  gl.uniform1f(u.inkSpread, FIELD.inkSpread);
+  gl.uniform1f(u.revealBand, FIELD.revealBand);
+  gl.uniform3fv(u.inkLight, INK.light);
+  gl.uniform3fv(u.inkMid, INK.mid);
+  gl.uniform3fv(u.inkDeep, INK.deep);
+  gl.uniform3fv(u.bg, INK.bg);
+
+  let dpr = Math.min(window.devicePixelRatio || 1, FIELD.maxDpr);
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio || 1, FIELD.maxDpr);
+    const w = Math.round(window.innerWidth * dpr), h = Math.round(window.innerHeight * dpr);
+    if(fieldCanvas.width === w && fieldCanvas.height === h) return;
+    fieldCanvas.width = w; fieldCanvas.height = h;
+    gl.viewport(0,0,w,h);
+    gl.uniform2f(u.resolution, w, h);
+    gl.uniform1f(u.cell, FIELD.cellSize * dpr);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  let texDirty = true, lastIdx = -1;
+  ticks.add(dt => {
+    const rev = revealSpring.step(dt);
+    const p = ptProgress.step(dt);
+    const tx = ptTiltX.step(dt), ty = ptTiltY.step(dt);
+
+    const idx = Math.round(p * (FIELD.scrubSteps - 1));
+    if(idx !== lastIdx){
+      lastIdx = idx;
+      lastYawDrawn = (idx/(FIELD.scrubSteps-1))*2 - 1;
+      drawSource(lastYawDrawn);
+      texDirty = true;
+    }
+    if(texDirty || fieldNeedsUpload){
+      fieldNeedsUpload = false;
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
+      texDirty = false;
+    }
+    gl.uniform1f(u.reveal, rev);
+    gl.uniform2f(u.tilt, tx * FIELD.tilt, ty * FIELD.tilt);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  });
+
+  window.addEventListener("pointermove", e => {
+    const px = Math.min(Math.max(e.clientX / window.innerWidth, 0), 1);
+    const py = Math.min(Math.max(e.clientY / window.innerHeight, 0), 1);
+    ptProgress.to(px);
+    ptTiltX.to(px*2 - 1);
+    ptTiltY.to(py*2 - 1);
+  }, {passive:true});
+})();
+
+/* ==========================================================================
+   4 · PRELOADER
+   ========================================================================== */
+const COUNT_MS = 2200, VEIL_DELAY = 150;
+const revealCallbacks = [];
+let revealed = false;
+function onReveal(fn){ revealed ? fn() : revealCallbacks.push(fn); }
+function markRevealed(){
+  if(revealed) return;
+  revealed = true;
+  revealSpring.to(1);
+  revealCallbacks.splice(0).forEach(fn => fn());
+}
+
+(function preloader(){
+  const root = document.getElementById("preloader");
+  const ring = document.getElementById("ring");
+  const disc = document.getElementById("disc");
+  const count = document.getElementById("count");
+  const ground = document.getElementById("ground");
+  const veil = document.getElementById("veil");
+
+  if(REDUCED){ root.remove(); markRevealed(); return; }
+
+  let t = 0, lifting = false;
+  const gs = new Spring(0, LIFT_SPRING), vs = new Spring(0, LIFT_SPRING);
+  let veilWait = 0;
+
+  const tick = dt => {
+    if(!lifting){
+      t = Math.min(t + dt*1000, COUNT_MS);
+      const p = t / COUNT_MS;                       /* linear — ein weich */
+      ring.setAttribute("stroke-dashoffset", 1 - p); /* laufender Zähler   */
+      disc.style.transform = `rotate(${p*720}deg)`;  /* lügt über die Zeit */
+      count.textContent = Math.round(p*100) + "%";
+      if(t >= COUNT_MS){ lifting = true; gs.to(1); markRevealed(); }
+      return;
+    }
+    const g = gs.step(dt);
+    ground.style.transform = `translateY(${-100*g}%)`;
+    veilWait += dt*1000;
+    if(veilWait >= VEIL_DELAY){
+      vs.to(1);
+      const v = vs.step(dt);
+      veil.style.transform = `translateY(${-100*v}%)`;
+      if(vs.rest){ ticks.delete(tick); root.remove(); }
+    }
+  };
+  ticks.add(tick);
+})();
+
+/* ==========================================================================
+   5 · EINGANGS-CHOREOGRAFIE
+   --------------------------------------------------------------------------
+   Alle Verzögerungen sind Millisekunden nach dem Signal — und das Signal fällt,
+   sobald sich die Vorhänge zu heben beginnen, nicht wenn sie weg sind. Sonst
+   läge die Seite ~650 ms sichtbar und regungslos da.
+   ========================================================================== */
+const DELAY = { headline:200, brand:320, nav:400, rule:420, cta:480, lead:500,
+                stats:560, statStep:80, body:620, request:760, trust:840, headlineBar:1100 };
+const LETTER_STAGGER = 26, WORD_STAGGER = 45;
+
+/** Zerlegt einen Textknoten in Spannen, ohne Auszeichnungen (<i>) zu verlieren. */
+function split(el, mode){
+  const out = [];
+  const walk = node => {
+    [...node.childNodes].forEach(child => {
+      if(child.nodeType === 3){
+        const frag = document.createDocumentFragment();
+        /* In beiden Modi wird an Leerzeichen getrennt: sonst zerfallen die
+           Buchstabenspannen zu eigenen Umbruchstellen und die Überschrift
+           bricht mitten im Wort. */
+        child.textContent.split(/(\s+)/).forEach(part => {
+          if(part === "") return;
+          if(/^\s+$/.test(part)){ frag.appendChild(document.createTextNode(part)); return; }
+          if(mode === "words"){
+            const w = document.createElement("span");
+            w.className = "wrd"; w.textContent = part;
+            frag.appendChild(w); out.push(w);
+            return;
+          }
+          const word = document.createElement("span");
+          word.className = "wrd-hold";
+          [...part].forEach(ch => {
+            const l = document.createElement("span");
+            l.className = "ltr"; l.textContent = ch;
+            word.appendChild(l); out.push(l);
+          });
+          frag.appendChild(word);
+        });
+        node.replaceChild(frag, child);
+      } else if(child.nodeType === 1){ walk(child); }
+    });
+  };
+  walk(el);
+  return out;
+}
+
+function enterLetters(el, delay){
+  const items = split(el, "letters");
+  items.forEach((s, i) => {
+    if(REDUCED){ s.style.cssText=""; return; }
+    animate(v => {
+      s.style.opacity = v;
+      s.style.transform = `translateX(${lerp(-1.25, 0, v)}rem)`;
+      s.style.filter = `blur(${lerp(10, 0, v)}px)`;
+    }, {delay: delay + i*LETTER_STAGGER});
+  });
+}
+function enterWords(el, delay){
+  const items = split(el, "words");
+  items.forEach((s, i) => {
+    if(REDUCED) return;
+    animate(v => {
+      s.style.opacity = v;
+      s.style.transform = `translateY(${lerp(.875, 0, v)}rem)`;
+      s.style.filter = `blur(${lerp(8, 0, v)}px)`;
+    }, {delay: delay + i*WORD_STAGGER});
+  });
+}
+/** `data-tx` haelt ein Transform fest, das die Bewegung nicht aufheben darf
+ *  (die Nav-Pille ist ueber translateX(-50%) zentriert). */
+function enterLift(el, delay, fromRem=1){
+  if(REDUCED) return;
+  const tx = el.dataset.tx ? el.dataset.tx + " " : "";
+  el.style.opacity = 0;
+  animate(v => { el.style.opacity = v; el.style.transform = `${tx}translateY(${lerp(fromRem,0,v)}rem)`; }, {delay});
+}
+
+/**
+ * Der Balken ist im Entwurf in `em` gesetzt und trifft das betonte Wort nur
+ * dort zufällig genau. Hier wird er nach dem Laden der Schrift auf das <i>
+ * eingemessen — mit demselben Überstand nach links wie im Original.
+ */
+function fitBar(){
+  const wrap = document.querySelector(".headline-wrap");
+  const word = document.querySelector("#hero-title i");
+  const bar = document.getElementById("headline-bar");
+  if(!wrap || !word || !bar) return;
+  const w = wrap.getBoundingClientRect(), i = word.getBoundingClientRect();
+  if(!i.width) return;
+  const over = parseFloat(getComputedStyle(wrap).fontSize) * 0.125;
+  bar.style.left = (i.left - w.left - over) + "px";
+  bar.style.width = (i.width + over) + "px";
+}
+window.addEventListener("resize", fitBar);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitBar);
+
+(function stageHero(){
+  const h1 = document.getElementById("hero-title");
+  const bar = document.getElementById("headline-bar");
+  const rule = document.getElementById("copy-rule");
+  const lead = document.querySelector(".lead");
+  const body = document.querySelector(".body-copy");
+  const stats = [...document.querySelectorAll('[data-anim="stat"]')];
+
+  if(!REDUCED){
+    [...document.querySelectorAll(".ltr, .wrd")].forEach(s => s.style.opacity = 0);
+    bar.style.transform = "scaleX(0)"; bar.style.opacity = 0;
+    rule.style.transform = "scaleY(0)";
+    ['brand','nav','cta','request','trust'].forEach(k => {
+      document.querySelectorAll(`[data-anim="${k}"]`).forEach(el => el.style.opacity = 0);
+    });
+    stats.forEach(el => el.style.opacity = 0);
+  }
+
+  onReveal(() => {
+    enterLetters(h1, DELAY.headline);
+    enterWords(lead, DELAY.lead);
+    enterWords(body, DELAY.body);
+    if(REDUCED){
+      [bar, rule].forEach(el => el.style.cssText = "");
+      document.querySelectorAll("[data-anim]").forEach(el => el.style.opacity = 1);
+      return;
+    }
+    document.querySelectorAll('[data-anim="brand"]').forEach(el => enterLift(el, DELAY.brand, .75));
+    document.querySelectorAll('[data-anim="nav"]').forEach(el => enterLift(el, DELAY.nav, .75));
+    document.querySelectorAll('[data-anim="cta"]').forEach(el => enterLift(el, DELAY.cta, .75));
+    animate(v => rule.style.transform = `scaleY(${v})`, {delay: DELAY.rule});
+    stats.forEach((el, i) => enterLift(el, DELAY.stats + i*DELAY.statStep));
+    document.querySelectorAll('[data-anim="request"]').forEach(el => enterLift(el, DELAY.request));
+    document.querySelectorAll('[data-anim="trust"]').forEach(el => enterLift(el, DELAY.trust));
+    fitBar();
+    animate(v => { bar.style.transform = `scaleX(${v})`; bar.style.opacity = v; }, {delay: DELAY.headlineBar});
+  });
+})();
+
+/* Zeigerreaktion für Schaltflächen — dieselbe Feder wie im Entwurf. */
+function hoverLift(el, scale=1.02, y=-0.125){
+  if(REDUCED) return;
+  const s = new Spring(0, HOVER_SPRING);
+  let live = false;
+  const tick = dt => {
+    const v = s.step(dt);
+    el.style.transform = `translateY(${v*y}rem) scale(${lerp(1, scale, v)})`;
+    if(s.rest){ live = false; ticks.delete(tick); }
+  };
+  const wake = () => { if(!live){ live = true; ticks.add(tick); } };
+  el.addEventListener("pointerenter", () => { s.to(1); wake(); });
+  el.addEventListener("pointerleave", () => { s.to(0); wake(); });
+  el.addEventListener("focus", () => { s.to(1); wake(); });
+  el.addEventListener("blur", () => { s.to(0); wake(); });
+}
+onReveal(() => {
+  const cta = document.querySelector(".header-cta");
+  if(cta) hoverLift(cta);
+  document.querySelectorAll(".search-submit, .quiz-next, .to-top").forEach(b => hoverLift(b, 1.02, 0));
+});
+
+/* ==========================================================================
+   6 · KAPITEL AUFBAUEN
+   ========================================================================== */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const CHECK_SVG = '<svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.6 11 1.6"/></svg>';
+const CHEV_SVG  = '<svg class="chev-i" viewBox="0 0 9 7.364" width="9" height="8" fill="none" stroke="currentColor" stroke-width="1"><path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/></svg>';
+
+function head(sec){
+  return `<div class="chapter-head reveal-up">
+    <span class="kicker">${esc(sec.kicker)}</span>
+    <h2 class="chapter-title">${esc(sec.title[0])}<i>${esc(sec.title[1])}</i></h2>
+    <p class="chapter-intro">${esc(sec.intro)}</p>
+  </div>`;
+}
+
+function tabBody(tab){
+  switch(tab.type){
+    case "text":
+      return `<p style="font-size:1.0625rem;line-height:1.45">${esc(tab.data)}</p>` +
+        (tab.extra ? `<div><h4 style="margin-bottom:.75rem">Einsatzschwelle / Kernpunkte</h4>
+          <ul class="bullets">${tab.extra.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>` : "");
+    case "list":  return `<ul class="bullets">${tab.data.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    case "warn":  return `<ul class="bullets errors">${tab.data.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    case "steps": return `<ol class="steps">${tab.data.map(s=>`<li><div><p class="st">${esc(s.t)}</p><p class="sd">${esc(s.d)}</p></div></li>`).join("")}</ol>`;
+    case "roles": return `<div class="roles">${tab.data.map(r=>`<div class="role"><b>${esc(r.n)}</b><span>${esc(r.d)}</span></div>`).join("")}</div>`;
+    default: return "";
+  }
+}
+
+function moduleHtml(m){
+  const tabs = m.tabs.map((t,i) =>
+    `<button role="tab" id="tab-${m.id}-${i}" aria-controls="panel-${m.id}-${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}">${esc(t.label)}</button>`).join("");
+  const panels = m.tabs.map((t,i) =>
+    `<div class="tabpanel" role="tabpanel" id="panel-${m.id}-${i}" aria-labelledby="tab-${m.id}-${i}" data-active="${i===0}">${tabBody(t)}</div>`).join("");
+  return `<article class="module reveal-up" id="${m.id}" data-open="false">
+    <div class="module-head">
+      <span class="module-abbr"${m.tone?` data-tone="${m.tone}"`:""}>${esc(m.abbr)}</span>
+      <div class="module-titles"><h3>${esc(m.title)}</h3><p>${esc(m.subtitle)}</p></div>
+      <button class="module-toggle" type="button" aria-expanded="false" aria-controls="body-${m.id}">
+        <span class="lbl">Öffnen</span><span class="chev">${CHEV_SVG}</span>
+      </button>
+    </div>
+    <div class="panel"><div><div id="body-${m.id}">
+      <div class="tabs" role="tablist" aria-label="${esc(m.title)}">${tabs}</div>
+      ${panels}
+      <div class="merksatz">${esc(m.merksatz)}</div>
+      <div class="mod-foot">
+        <label class="check">
+          <input type="checkbox" data-learn="${m.id}" />
+          <span class="box">${CHECK_SVG}</span>
+          <span>Durchgearbeitet</span>
+        </label>
+        <span style="font-size:.875rem;color:var(--muted)">Kapitel-Kennung: <i>${esc(m.id)}</i></span>
+      </div>
+    </div></div></div>
+  </article>`;
+}
+
+function chapterHtml(sec){
+  if(sec.items){
+    return `<section class="chapter" id="${sec.id}">${head(sec)}
+      <div class="principles">${sec.items.map(p => `
+        <article class="principle reveal-up" data-open="false" id="prinzip-${p.nr}">
+          <button type="button" aria-expanded="false">
+            <span class="nr">${esc(p.nr)}</span>
+            <span class="p-title">${esc(p.title)}<span class="p-claim">${esc(p.claim)}</span></span>
+            <span class="chev">${CHEV_SVG}</span>
+          </button>
+          <div class="panel"><div><div class="panel-inner">
+            <ul class="bullets">${p.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+            <p class="note">${esc(p.note)}</p>
+          </div></div></div>
+        </article>`).join("")}</div>
+    </section>`;
+  }
+  return `<section class="chapter" id="${sec.id}">${head(sec)}
+    <div class="modules">${sec.modules.map(moduleHtml).join("")}</div>
+  </section>`;
+}
+
+const chapters = document.getElementById("chapters");
+chapters.innerHTML =
+  chapterHtml(HANDBUCH.grundprinzipien) +
+  chapterHtml(HANDBUCH.grundtaktiken) +
+  chapterHtml(HANDBUCH.besonderheiten) +
+  chapterHtml(HANDBUCH.spezialisierungen) +
+  `<section class="chapter" id="glossar">
+     <div class="chapter-head reveal-up">
+       <span class="kicker">Nachschlagen</span>
+       <h2 class="chapter-title">Glossar und <i>Abkürzungen</i></h2>
+       <p class="chapter-intro">Einheitliche Begriffe sind die Voraussetzung für kurze Meldungen. Wer hier etwas vermisst oder anders verwendet, meldet es der Ausbildungsleitung — Begriffe werden einheitsweit festgelegt, nicht truppweise.</p>
+     </div>
+     <div class="glossar">${HANDBUCH.glossar.map(g=>`<div class="gloss reveal-up"><b>${esc(g.t)}</b><span>${esc(g.d)}</span></div>`).join("")}</div>
+   </section>`;
+
+/* ---- Aufklappen: Prinzipien --------------------------------------------- */
+chapters.addEventListener("click", e => {
+  const pBtn = e.target.closest(".principle > button");
+  if(pBtn){
+    const card = pBtn.parentElement;
+    const open = card.dataset.open !== "true";
+    card.dataset.open = String(open);
+    pBtn.setAttribute("aria-expanded", String(open));
+    return;
+  }
+  const mBtn = e.target.closest(".module-toggle");
+  if(mBtn){
+    const mod = mBtn.closest(".module");
+    const open = mod.dataset.open !== "true";
+    mod.dataset.open = String(open);
+    mBtn.setAttribute("aria-expanded", String(open));
+    mBtn.querySelector(".lbl").textContent = open ? "Schließen" : "Öffnen";
+    return;
+  }
+  const tab = e.target.closest('[role="tab"]');
+  if(tab){
+    const list = tab.closest('[role="tablist"]');
+    list.querySelectorAll('[role="tab"]').forEach(t => {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).dataset.active = String(on);
+    });
+  }
+});
+chapters.addEventListener("keydown", e => {
+  const tab = e.target.closest('[role="tab"]');
+  if(!tab || !["ArrowLeft","ArrowRight"].includes(e.key)) return;
+  const all = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
+  const next = all[(all.indexOf(tab) + (e.key==="ArrowRight"?1:all.length-1)) % all.length];
+  next.focus(); next.click();
+});
+
+/** Öffnet ein Modul und springt hin — für Suche und Direktlinks. */
+function openTarget(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const mod = el.closest(".module") || (el.classList.contains("module") ? el : null);
+  const pri = el.closest(".principle") || (el.classList.contains("principle") ? el : null);
+  if(mod){ mod.dataset.open = "true";
+    const t = mod.querySelector(".module-toggle");
+    t.setAttribute("aria-expanded","true"); t.querySelector(".lbl").textContent = "Schließen"; }
+  if(pri){ pri.dataset.open = "true"; pri.querySelector("button").setAttribute("aria-expanded","true"); }
+  (mod || pri || el).scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block:"start"});
+}
+
+/* ==========================================================================
+   7 · SUCHE
+   --------------------------------------------------------------------------
+   Der Index wird einmal aus HANDBUCH gebaut; jede Zeile Fachtext ist damit
+   auffindbar, ohne dass irgendwo eine zweite Liste gepflegt werden müsste.
+   ========================================================================== */
+const INDEX = [];
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+function idx(section, title, target, text){ INDEX.push({section, title, target, hay: norm(title+" "+text)}); }
+
+HANDBUCH.grundprinzipien.items.forEach(p =>
+  idx("Grundprinzipien", p.nr + " · " + p.title, "prinzip-"+p.nr, p.claim+" "+p.points.join(" ")+" "+p.note));
+
+[["Grundtaktiken", HANDBUCH.grundtaktiken],
+ ["Besonderheiten", HANDBUCH.besonderheiten],
+ ["Spezialisierungen", HANDBUCH.spezialisierungen]].forEach(([label, sec]) => {
+  sec.modules.forEach(m => {
+    idx(label, m.abbr + " — " + m.title, m.id, m.subtitle + " " + m.merksatz);
+    m.tabs.forEach(t => {
+      const flat = t.type==="steps" ? t.data.map(s=>s.t+" "+s.d).join(" ")
+                 : t.type==="roles" ? t.data.map(r=>r.n+" "+r.d).join(" ")
+                 : Array.isArray(t.data) ? t.data.join(" ")
+                 : t.data + " " + (t.extra||[]).join(" ");
+      idx(label + " · " + m.abbr, t.label, m.id, flat);
+    });
+  });
+});
+HANDBUCH.glossar.forEach(g => idx("Glossar", g.t, "glossar", g.d));
+
+const searchForm = document.getElementById("search");
+const qInput = document.getElementById("q");
+const hits = document.getElementById("hits");
+let hitList = [], cursor = -1;
+
+function renderHits(list){
+  hitList = list; cursor = -1;
+  if(!list.length){
+    hits.innerHTML = `<li class="search-empty">Kein Treffer. Andere Schreibweise oder Abkürzung versuchen — z. B. „NIT“, „Türkunde“, „MARCH“.</li>`;
+  } else {
+    hits.innerHTML = list.map((h,i) =>
+      `<li role="option" aria-selected="false"><button type="button" data-i="${i}">
+         <span class="hit-sec">${esc(h.section)}</span>
+         <span class="hit-title">${esc(h.title)}</span>
+       </button></li>`).join("");
+  }
+  hits.hidden = false;
+  qInput.setAttribute("aria-expanded","true");
+}
+function closeHits(){ hits.hidden = true; qInput.setAttribute("aria-expanded","false"); cursor = -1; }
+function moveCursor(d){
+  const opts = [...hits.querySelectorAll("li[role=option]")];
+  if(!opts.length) return;
+  cursor = (cursor + d + opts.length) % opts.length;
+  opts.forEach((o,i) => o.setAttribute("aria-selected", String(i===cursor)));
+  opts[cursor].scrollIntoView({block:"nearest"});
+}
+function runSearch(){
+  const raw = qInput.value.trim();
+  if(raw.length < 2){ closeHits(); return; }
+  const terms = norm(raw).split(/\s+/);
+  const found = INDEX.filter(e => terms.every(t => e.hay.includes(t))).slice(0, 24);
+  renderHits(found);
+}
+qInput.addEventListener("input", runSearch);
+qInput.addEventListener("focus", () => { if(qInput.value.trim().length >= 2) runSearch(); });
+qInput.addEventListener("keydown", e => {
+  if(e.key === "ArrowDown"){ e.preventDefault(); if(hits.hidden) runSearch(); else moveCursor(1); }
+  else if(e.key === "ArrowUp"){ e.preventDefault(); moveCursor(-1); }
+  else if(e.key === "Escape"){ closeHits(); qInput.blur(); }
+});
+searchForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const pick = hitList[cursor >= 0 ? cursor : 0];
+  if(pick){ openTarget(pick.target); closeHits(); qInput.blur(); }
+});
+hits.addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]");
+  if(!b) return;
+  openTarget(hitList[+b.dataset.i].target);
+  closeHits(); qInput.blur();
+});
+document.addEventListener("click", e => { if(!searchForm.contains(e.target)) closeHits(); });
+document.addEventListener("keydown", e => {
+  if(e.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+    e.preventDefault(); window.scrollTo({top:0, behavior: REDUCED?"auto":"smooth"}); qInput.focus();
+  }
+});
+
+/* ==========================================================================
+   8 · LERNFORTSCHRITT (localStorage)
+   ========================================================================== */
+const STORE = "ukdo-taktik-fortschritt-v1";
+const learnBoxes = [...document.querySelectorAll("input[data-learn]")];
+const fill = document.getElementById("progress-fill");
+const plabel = document.getElementById("progress-label");
+
+function readState(){
+  try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch(_){ return {}; }
+}
+function writeState(s){ try{ localStorage.setItem(STORE, JSON.stringify(s)); }catch(_){ } }
+function paintProgress(){
+  const done = learnBoxes.filter(b => b.checked).length;
+  plabel.textContent = `${done} / ${learnBoxes.length}`;
+  fill.style.width = (learnBoxes.length ? done/learnBoxes.length*100 : 0) + "%";
+}
+(function initProgress(){
+  const state = readState();
+  learnBoxes.forEach(b => { b.checked = !!state[b.dataset.learn]; });
+  paintProgress();
+  learnBoxes.forEach(b => b.addEventListener("change", () => {
+    const s = readState(); s[b.dataset.learn] = b.checked; writeState(s); paintProgress();
+  }));
+  document.getElementById("progress-reset").addEventListener("click", () => {
+    writeState({}); learnBoxes.forEach(b => b.checked = false); paintProgress();
+  });
+})();
+
+/* ==========================================================================
+   9 · WISSENSCHECK
+   ========================================================================== */
+(function quiz(){
+  const order = HANDBUCH.quiz.map((_,i) => i).sort(() => Math.random() - .5);
+  let pos = 0, score = 0, answered = false;
+  const qEl = document.getElementById("quiz-q");
+  const aEl = document.getElementById("quiz-answers");
+  const wEl = document.getElementById("quiz-why");
+  const nEl = document.getElementById("quiz-next");
+  const tEl = document.getElementById("quiz-topic");
+  const sEl = document.getElementById("quiz-score");
+  const KEYS = "ABCD";
+
+  function render(){
+    if(pos >= order.length){
+      tEl.textContent = "Ergebnis";
+      sEl.textContent = "";
+      qEl.textContent = `${score} von ${order.length} richtig.`;
+      aEl.innerHTML = "";
+      wEl.hidden = false;
+      wEl.textContent = score === order.length
+        ? "Vollständig. Trotzdem gilt: Wissen ist die Voraussetzung, Training ist die Leistung."
+        : "Die falsch beantworteten Themen im zugehörigen Kapitel nachlesen und im nächsten Training ansprechen.";
+      nEl.hidden = false; nEl.textContent = "Noch einmal";
+      nEl.onclick = () => { order.sort(() => Math.random() - .5); pos = 0; score = 0; render(); };
+      return;
+    }
+    const q = HANDBUCH.quiz[order[pos]];
+    answered = false;
+    tEl.textContent = q.topic;
+    sEl.textContent = `Frage ${pos+1} von ${order.length} · ${score} richtig`;
+    qEl.textContent = q.q;
+    aEl.innerHTML = q.a.map((t,i) => `<button type="button" data-i="${i}" data-key="${KEYS[i]}">${esc(t)}</button>`).join("");
+    wEl.hidden = true; nEl.hidden = true;
+    nEl.textContent = "Nächste Frage";
+    nEl.onclick = () => { pos++; render(); };
+  }
+  aEl.addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if(!b || answered) return;
+    answered = true;
+    const q = HANDBUCH.quiz[order[pos]];
+    const pick = +b.dataset.i;
+    if(pick === q.c) score++;
+    [...aEl.children].forEach((el,i) => {
+      el.disabled = true;
+      if(i === q.c) el.dataset.state = "right";
+      else if(i === pick) el.dataset.state = "wrong";
+    });
+    wEl.innerHTML = `<b style="font-weight:400">${pick===q.c ? "Richtig." : "Nicht richtig."}</b> ${esc(q.why)}`;
+    wEl.hidden = false; nEl.hidden = false;
+    sEl.textContent = `Frage ${pos+1} von ${order.length} · ${score} richtig`;
+  });
+  render();
+})();
+
+/* ==========================================================================
+   10 · NAVIGATION, MENÜ, SCROLL-EINGÄNGE, LOGO
+   ========================================================================== */
+
+/* Aktives Kapitel in der Nav-Pille markieren. */
+(function activeNav(){
+  const links = [...document.querySelectorAll("#nav a")];
+  const targets = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  if(!targets.length) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if(!en.isIntersecting) return;
+      links.forEach(a => a.dataset.active = String(a.getAttribute("href") === "#" + en.target.id));
+    });
+  }, {rootMargin:"-45% 0px -50% 0px", threshold:0});
+  targets.forEach(t => io.observe(t));
+})();
+
+/* Mobiles Menü — derselbe geklemmte Vorhang wie im Preloader. */
+(function menu(){
+  const menu = document.getElementById("menu");
+  const burger = document.getElementById("burger");
+  const close = document.getElementById("menu-close");
+  const s = new Spring(0, LIFT_SPRING);
+  let running = false, open = false;
+
+  const tick = dt => {
+    const v = s.step(dt);
+    menu.style.transform = `translateY(${(v-1)*100}%)`;
+    if(s.rest){ running = false; ticks.delete(tick); if(!open) menu.hidden = true; }
+  };
+  const wake = () => { if(!running){ running = true; ticks.add(tick); } };
+
+  function setOpen(next){
+    open = next;
+    burger.setAttribute("aria-expanded", String(next));
+    burger.setAttribute("aria-label", next ? "Menü schließen" : "Menü öffnen");
+    document.body.classList.toggle("is-locked", next);
+    if(next){ menu.hidden = false; menu.style.transform = "translateY(-100%)"; }
+    if(REDUCED){ menu.style.transform = next ? "translateY(0)" : "translateY(-100%)"; if(!next) menu.hidden = true; return; }
+    s.to(next ? 1 : 0); wake();
+    if(next) close.focus();
+  }
+  burger.addEventListener("click", () => setOpen(!open));
+  close.addEventListener("click", () => setOpen(false));
+  menu.addEventListener("click", e => { if(e.target.closest("[data-close]")) setOpen(false); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && open) setOpen(false); });
+})();
+
+/* Inhalte unterhalb des Heros treten beim Erreichen ein — dieselbe Hausfeder. */
+(function scrollEntrances(){
+  const items = [...document.querySelectorAll(".reveal-up")];
+  if(REDUCED){ items.forEach(el => el.style.cssText = ""); return; }
+  items.forEach(el => { el.style.opacity = 0; });
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(en => {
+      if(!en.isIntersecting) return;
+      obs.unobserve(en.target);
+      const el = en.target;
+      const delay = Math.min(120, [...(el.parentElement?.children||[])].indexOf(el) * 45);
+      animate(v => { el.style.opacity = v; el.style.transform = `translateY(${lerp(1.25,0,v)}rem)`; }, {delay});
+    });
+  }, {rootMargin:"0px 0px -10% 0px", threshold:0.08});
+  items.forEach(el => io.observe(el));
+})();
+
+/* ---- Einheitszeichen ----------------------------------------------------
+   Ersatzzeichen, damit die Seite ohne jede externe Datei läuft. Um das echte
+   Foto/Logo zu verwenden: Datei als Data-URI hier eintragen (siehe README) —
+   dann erscheint es im Kopf und, sofern es sich einlesen lässt, auch im
+   Halbton-Feld.                                                             */
+const LOGO_SRC = "";
+const LOGO_FALLBACK = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#0f1211"/>
+  <g transform="rotate(-6 50 50)">
+    <rect x="9" y="28" width="82" height="44" rx="5" fill="#000" stroke="#e9efec" stroke-width="2.5"/>
+    <text x="50" y="51.5" text-anchor="middle" dominant-baseline="middle"
+          font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="25"
+          letter-spacing="0.5" fill="#f2f6f4">ÜKDO</text>
+  </g>
+</svg>`);
+document.getElementById("brand-mark").src = LOGO_SRC || LOGO_FALLBACK;
+
+if(LOGO_SRC){
+  const img = new Image();
+  img.onload = () => { logoImage = img; drawSource(lastYawDrawn); fieldNeedsUpload = true; };
+  img.src = LOGO_SRC;
+}
+
+/* Sanfter Anker-Sprung ohne den fixierten Kopf zu unterlaufen. */
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="#"]');
+  if(!a) return;
+  const id = a.getAttribute("href").slice(1);
+  if(!id) return;
+  const el = document.getElementById(id);
+  if(!el) return;
+  e.preventDefault();
+  history.replaceState(null, "", "#" + id);
+  openTarget(id);
+});
+</script>
+</body>
+</html>
