@@ -35,6 +35,7 @@ Rollen, Fehlerbilder) und schließt mit einem Merksatz.
 
 - **Suche** — Pille unten links im Kopfbereich; Taste <kbd>/</kbd> springt
   direkt hinein. Pfeiltasten wählen, <kbd>Enter</kbd> öffnet das Kapitel.
+- **Bearbeiten** — Stift oben rechts, Passwort `ÜKDO2026!`; siehe unten.
 - **Lernfortschritt** — jedes Modul lässt sich als „durchgearbeitet“ markieren.
   Der Stand liegt im `localStorage` des jeweiligen Geräts, wird also nicht
   übertragen und nicht ausgewertet.
@@ -69,6 +70,68 @@ Die Zeile ersetzt im Skript `const LOGO_SRC = "";`. Das Logo erscheint dann im
 Kopf **und** im Halbton-Feld des Heros. Ein Data-URI ist bewusst der empfohlene
 Weg: ein per `file://` verlinktes Bild dürfte der Browser nicht in die
 WebGL-Textur übernehmen.
+
+## Inhalte direkt auf der Seite bearbeiten
+
+Der **Stift oben rechts** fragt ein Passwort ab und schaltet die Bearbeitung frei.
+
+> **Passwort: `ÜKDO2026!`**
+>
+> Das ist **kein Schutz im Sinne von Sicherheit.** Wer die Datei hat, hat auch
+> den Inhalt — der Riegel verhindert versehentliches Verändern, mehr nicht. Der
+> Wert liegt als Prüfsumme in der Datei, nicht im Klartext; das erschwert das
+> zufällige Finden, hält aber niemanden auf, der danach sucht. Wenn der Inhalt
+> wirklich geschützt sein soll, gehört die Datei auf ein Laufwerk mit
+> Zugriffsrechten, nicht hinter dieses Feld.
+
+Freigeschaltet lässt sich **jeder Text** auf der Seite anklicken und ändern:
+Überschrift, Vorspann, Kennzahlen, Kapitelköpfe, Modultitel, Grundsätze,
+Ablaufschritte, Rollen, Fehlerbilder, Merksätze, Glossar, die Fragen des
+Wissenschecks samt richtiger Antwort — und die Fußzeile.
+
+| Bedienelement | Wirkung |
+|---|---|
+| `+ Punkt` / `+ Schritt` / `+ Rolle` | hängt einen Eintrag an die Liste an |
+| `✕` am Eintrag | entfernt ihn |
+| `↑ ↓` | verschiebt Schritte, Module, Reiter, Fragen |
+| `+ Liste / Ablauf / Rollen / Absatz` | legt einen neuen Reiter im Modul an |
+| `+ Modul` / `+ Grundprinzip` / `+ Begriff` / `+ Frage` | ergänzt einen ganzen Abschnitt |
+| `Bild einfügen` | öffnet die Dateiauswahl (mehrere Bilder auf einmal möglich) |
+| `Modul löschen` / `Reiter löschen` | entfernt den ganzen Block |
+| `Strg`+`Z` | macht den letzten Schritt rückgängig |
+
+**Bilder** werden beim Einfügen auf höchstens 1600 px verkleinert und als
+Data-URI im Inhalt abgelegt — die Seite bleibt also eine einzige Datei, auch mit
+eigenen Aufnahmen. Die Bildunterschrift ist ebenfalls änderbar.
+
+### Wie Änderungen erhalten bleiben
+
+Geändert wird nicht das Markup, sondern das Datenobjekt `HANDBUCH` — deshalb
+finden Suche, Wissenscheck, Lernfortschritt und Druckfassung sofort denselben
+Stand. Gespeichert wird laufend im `localStorage` des Geräts. Zum Weitergeben
+gibt es drei Wege in der Leiste am unteren Rand:
+
+- **Als HTML sichern** — erzeugt eine neue, vollständige `index.html` mit dem
+  aktuellen Inhalt. Das ist der Weg für die Einheit: Datei austauschen, fertig.
+  Sie funktioniert auf jedem Gerät ohne Browserspeicher.
+- **JSON sichern / JSON laden** — nur der Inhalt, für den Abgleich zwischen
+  Geräten oder als Sicherung.
+- **Auslieferungsstand** — verwirft alle Änderungen und stellt den Stand her,
+  der in *dieser* Datei steckt.
+
+Beim Öffnen gewinnt der in der Datei eingebackene Stand über einen älteren im
+Browserspeicher (Vergleich über das Feld `stand`). Eine frisch exportierte
+`index.html` zeigt also sofort ihren eigenen Inhalt und wird nicht von alten
+lokalen Änderungen überstimmt.
+
+Die Freischaltung gilt nur für die laufende Sitzung (`sessionStorage`) — wer die
+Registerkarte schließt, muss das Passwort erneut eingeben.
+
+### Passwort ändern
+
+In `index.html` die Zeile mit `const SCHLUESSEL = …` ersetzen. Den Wert für ein
+neues Passwort liefert die Seite selbst: Entwicklerkonsole öffnen und
+`schluessel("neuesPasswort")` aufrufen — die Ausgabe eintragen.
 
 ## Farbkonzept
 

@@ -195,7 +195,18 @@ i,em{font-style:italic}
 }
 .nav-pill .dot{width:.25rem;height:.25rem;border-radius:9999px;background:var(--steel);flex:none}
 
+.header-right{display:flex;align-items:center;gap:.25rem}
 .header-cta{display:flex;align-items:center;gap:.25rem}
+
+/* Der Stift sitzt als äußerstes Element rechts — freigeschaltet wird er selbst
+   zur goldenen Fläche, damit der Zustand ohne Beschriftung ablesbar ist. */
+.edit-btn{
+  width:3.125rem;height:3.125rem;border-radius:9999px;flex:none;
+  background:var(--surface);border:1px solid var(--hairline);color:var(--accent);
+  display:grid;place-items:center;cursor:pointer;
+}
+.edit-btn:hover{border-color:var(--accent-deep)}
+body[data-edit="on"] .edit-btn{background:var(--accent);border-color:var(--accent-deep);color:var(--on-accent)}
 .cta-btn{
   height:3.125rem;width:9.1875rem;border-radius:9999px;
   background:var(--accent);color:var(--on-accent);border:1px solid var(--accent-deep);
@@ -262,7 +273,7 @@ i,em{font-style:italic}
 .stat-card[data-accent="true"]{border-color:var(--accent-deep)}
 .stat-card[data-accent="true"] .val{color:var(--accent-soft)}
 .stat-card .val{font-size:var(--text-stat);font-style:italic;line-height:1}
-.stat-card .lbl{font-family:"Mulish",system-ui,sans-serif;font-size:var(--text-body);line-height:1.2;color:var(--secondary)}
+.stat-card .lbl{font-family:"Mulish",system-ui,sans-serif;font-size:var(--text-body);line-height:1.2;color:var(--secondary);hyphens:auto}
 
 /* Suchpille (im Entwurf die Request-Form) */
 .search-pill{
@@ -335,6 +346,129 @@ i,em{font-style:italic}
     font-family:"Mulish",sans-serif;text-transform:uppercase;letter-spacing:.12em;
   }
   .scroll-hint span{display:block;width:1px;height:1.75rem;background:var(--hairline-strong)}
+}
+
+/* ==========================================================================
+   Bearbeitungsmodus
+   --------------------------------------------------------------------------
+   Alle Bedienelemente sind im Lesemodus vollständig ausgeblendet — die Seite
+   sieht dann exakt so aus wie ohne diese Funktion.
+   ========================================================================== */
+.ed-only{display:none!important}
+body[data-edit="on"] .ed-only{display:inline-flex!important}
+body[data-edit="on"] .ed-sectionbar,
+body[data-edit="on"] .ed-tabbar{display:flex!important}
+body[data-edit="on"]{padding-bottom:5.5rem}
+
+body[data-edit="on"] [data-ed]{
+  outline:1px dashed rgba(201,169,97,.38);outline-offset:2px;border-radius:.2rem;cursor:text;
+}
+body[data-edit="on"] [data-ed]:hover{outline-color:var(--accent)}
+body[data-edit="on"] [data-ed]:focus{
+  outline:2px solid var(--accent);background:rgba(201,169,97,.10);
+}
+body[data-edit="on"] .headline [data-ed]{outline-offset:4px}
+
+.ed-x{
+  width:1.375rem;height:1.375rem;flex:none;margin-left:auto;align-items:center;justify-content:center;
+  border-radius:9999px;border:1px solid var(--hairline);background:transparent;color:var(--muted);
+  cursor:pointer;font-size:.75rem;line-height:1;
+}
+.ed-x:hover{border-color:var(--warn);color:var(--warn)}
+.ed-add{
+  align-items:center;gap:.375rem;height:2rem;padding:0 .875rem;border-radius:9999px;
+  border:1px dashed var(--hairline-strong);background:transparent;color:var(--muted);
+  cursor:pointer;font-size:.8125rem;font-family:"Mulish",sans-serif;align-self:flex-start;
+}
+.ed-add:hover{border-style:solid;border-color:var(--accent);color:var(--accent)}
+.ed-move{gap:.125rem;flex:none}
+.ed-move button{
+  width:1.375rem;height:1.375rem;border-radius:.375rem;border:1px solid var(--hairline);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:.6875rem;line-height:1;
+}
+.ed-move button:hover{border-color:var(--accent);color:var(--accent)}
+.ed-tabbar{gap:.5rem;margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--hairline)}
+.ed-sectionbar{gap:.5rem;margin-top:1rem}
+.ed-tabadd{gap:.375rem;flex-wrap:wrap}
+
+.media{display:flex;flex-direction:column;gap:.75rem}
+.media h4{font-family:"Mulish",sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(13rem,1fr));gap:.75rem;align-items:start}
+.shot{position:relative;border:1px solid var(--hairline);border-radius:.75rem;overflow:hidden;background:var(--background)}
+.shot img{width:100%;height:auto;display:block}
+.shot figcaption{padding:.625rem .75rem;font-size:.8125rem;line-height:1.35;color:var(--muted)}
+.shot .ed-x{position:absolute;top:.5rem;right:.5rem;background:rgba(10,10,10,.75);margin:0}
+.ed-shot{
+  min-height:8rem;border-radius:.75rem;border:1px dashed var(--hairline-strong);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:.875rem;align-items:center;justify-content:center;
+}
+.ed-shot:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Fragen-Editor unter dem Wissenscheck */
+.quiz-edit{flex-direction:column;gap:.75rem;margin-top:1.25rem;max-width:52rem}
+body[data-edit="on"] .quiz-edit{display:flex!important}
+.qe{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--radius-card);padding:1.25rem;display:flex;flex-direction:column;gap:.625rem}
+.qe .qe-q{font-size:1.0625rem;line-height:1.3}
+.qe .qe-row{display:flex;align-items:flex-start;gap:.625rem;font-size:.9375rem;line-height:1.35}
+.qe .qe-row input{margin-top:.35rem;accent-color:var(--ok);flex:none}
+.qe .qe-meta{display:flex;gap:.75rem;flex-wrap:wrap;font-size:.8125rem;color:var(--muted)}
+.qe .qe-foot{display:flex;gap:.5rem;justify-content:flex-end}
+
+@media (min-width:1024px){
+  body[data-edit="on"] .search-pill,
+  body[data-edit="on"] .progress-pill{bottom:6.25rem}
+  body[data-edit="on"] .scroll-hint{display:none}
+}
+
+/* Passwortdialog */
+dialog#pwd{
+  margin:auto;                       /* sonst klebt der Dialog oben links */
+  border:1px solid var(--hairline);border-radius:var(--radius-card);padding:0;
+  background:var(--surface);color:var(--foreground);max-width:26rem;width:calc(100% - 2.5rem);
+}
+dialog#pwd::backdrop{background:rgba(10,10,10,.72);backdrop-filter:blur(2px)}
+.pwd-card{display:flex;flex-direction:column;gap:.875rem;padding:1.75rem}
+.pwd-card h2{font-size:1.375rem;font-weight:300;line-height:1.2}
+.pwd-hint{font-size:.9375rem;line-height:1.4;color:var(--muted)}
+.pwd-card input{
+  height:3rem;padding:0 1rem;border-radius:9999px;border:1px solid var(--hairline);
+  background:var(--ink-deep);color:var(--foreground);outline:none;font-size:1rem;
+}
+.pwd-card input:focus{border-color:var(--accent)}
+.pwd-err{font-size:.875rem;color:var(--warn)}
+.pwd-actions{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.25rem}
+.btn-gold{height:2.75rem;padding:0 1.375rem;border-radius:9999px;background:var(--accent);
+  color:var(--on-accent);border:1px solid var(--accent-deep);cursor:pointer;font-size:.9375rem}
+.btn-ghost{height:2.75rem;padding:0 1.375rem;border-radius:9999px;background:transparent;
+  color:var(--secondary);border:1px solid var(--hairline);cursor:pointer;font-size:.9375rem}
+
+/* Leiste am unteren Rand, solange bearbeitet wird */
+.ed-bar{
+  position:fixed;left:.625rem;right:.625rem;bottom:.625rem;z-index:80;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.5rem .5rem .5rem 1.25rem;border-radius:9999px;
+  background:var(--surface-2);border:1px solid var(--accent-deep);
+  box-shadow:0 1rem 2.5rem rgba(0,0,0,.55);
+}
+.ed-bar[hidden]{display:none}
+.ed-live{display:flex;align-items:center;gap:.5rem;font-size:.9375rem;white-space:nowrap}
+.ed-dot{width:.5rem;height:.5rem;border-radius:9999px;background:var(--ok);flex:none}
+.ed-status{font-size:.8125rem;color:var(--muted);flex:1;min-width:6rem}
+.ed-status[data-warn="true"]{color:var(--warn)}
+.ed-bar-actions{display:flex;gap:.375rem;flex-wrap:wrap;margin-left:auto}
+.ed-bar-actions button{
+  height:2.5rem;padding:0 1rem;border-radius:9999px;border:1px solid var(--hairline);
+  background:transparent;color:var(--secondary);cursor:pointer;font-size:.875rem;white-space:nowrap;
+}
+.ed-bar-actions button:hover{border-color:var(--steel);color:var(--foreground)}
+.ed-bar-actions .btn-gold{
+  height:2.5rem;background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);
+}
+.ed-bar-actions .btn-gold:hover{background:var(--accent-soft);color:var(--on-accent);border-color:var(--accent-soft)}
+@media (max-width:700px){
+  .ed-bar{border-radius:var(--radius-card);padding:.75rem}
+  .ed-bar-actions{margin-left:0;width:100%}
+  .ed-bar-actions button{flex:1}
 }
 
 @media (max-width:1023px){
@@ -618,18 +752,30 @@ i,em{font-style:italic}
     <a href="#spezialisierungen">Spezialisierung</a>
   </nav>
 
-  <div class="header-cta" data-anim="cta">
-    <a class="cta-btn" href="#wissenscheck">Wissenscheck</a>
-    <span class="cta-twin" aria-hidden="true"><span>
-      <svg viewBox="0 0 9 7.364" fill="none" stroke="currentColor" stroke-width="1">
-        <path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/>
-      </svg>
-    </span></span>
-  </div>
+  <div class="header-right" data-anim="cta">
+    <div class="header-cta">
+      <a class="cta-btn" href="#wissenscheck">Wissenscheck</a>
+      <span class="cta-twin" aria-hidden="true"><span>
+        <svg viewBox="0 0 9 7.364" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/>
+        </svg>
+      </span></span>
+    </div>
 
-  <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" data-anim="cta">
-    <i></i><i></i>
-  </button>
+    <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false">
+      <i></i><i></i>
+    </button>
+
+    <!-- Stift: fordert das Passwort an und schaltet die Bearbeitung frei -->
+    <button class="edit-btn" id="edit-btn" type="button"
+            aria-label="Bearbeitung freischalten" title="Bearbeiten">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 20.5h4.2L19.4 9.3a2.6 2.6 0 0 0-3.7-3.7L4.5 16.8z"/>
+        <path d="M14.4 6.9l3.7 3.7"/>
+      </svg>
+    </button>
+  </div>
 </header>
 
 <div id="menu" role="dialog" aria-modal="true" aria-label="Navigation" hidden>
@@ -687,11 +833,7 @@ i,em{font-style:italic}
 
   <section class="chapter" id="wissenscheck">
     <div class="shell">
-      <div class="chapter-head reveal-up">
-        <span class="kicker">Weiterbildung</span>
-        <h2 class="chapter-title">Wissenscheck — <i>zehn Fragen</i></h2>
-        <p class="chapter-intro">Kurzabfrage quer durch das Handbuch. Kein Leistungsnachweis, sondern ein Selbsttest für die Einsatzvorbereitung: falsch beantwortete Fragen verweisen auf das zugehörige Kapitel.</p>
-      </div>
+      <div class="chapter-head reveal-up" id="quiz-head"></div>
       <div class="quiz reveal-up" id="quiz">
         <div class="quiz-meta">
           <span class="topic" id="quiz-topic"></span>
@@ -702,6 +844,7 @@ i,em{font-style:italic}
         <p class="quiz-why" id="quiz-why" hidden></p>
         <button class="quiz-next" id="quiz-next" type="button" hidden>Nächste Frage</button>
       </div>
+      <div class="ed-only quiz-edit" id="quiz-edit"></div>
     </div>
   </section>
   </div>
@@ -710,16 +853,52 @@ i,em{font-style:italic}
 <footer class="site-footer">
   <div class="shell row">
     <p class="disclaimer">
-      <b style="font-weight:400;color:var(--foreground)">ÜKDO · Taktikhandbuch</b> — interne Ausbildungsunterlage.
-      Die Inhalte fassen allgemein anerkannte polizeitaktische Grundsätze zusammen und ersetzen keine Dienstvorschrift,
-      keinen Erlass und keine Einsatzbefehle. Verbindlich ist immer die aktuelle Weisungslage der Einheit.
-      Vor der Nutzung im Training durch die Ausbildungsleitung freigeben und um einheitseigene Verfahren ergänzen.
+      <b style="font-weight:400;color:var(--foreground)">ÜKDO · Taktikhandbuch</b> —
+      <span id="footer-note"></span>
     </p>
     <button class="to-top" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">Nach oben ↑</button>
   </div>
 </footer>
 
+<!-- Passwortabfrage. Kein Schutz im Sinne von Sicherheit — ein Riegel gegen
+     versehentliches Verändern. Wer die Datei hat, hat auch den Inhalt. -->
+<dialog id="pwd" aria-labelledby="pwd-title">
+  <form class="pwd-card" id="pwd-form">
+    <h2 id="pwd-title">Bearbeitung freischalten</h2>
+    <p class="pwd-hint">Danach lassen sich alle Texte, Listen, Abläufe, Rollen, Begriffe und
+      Fragen direkt auf der Seite ändern und Bilder einfügen.</p>
+    <label class="sr-only" for="pwd-input">Passwort</label>
+    <input id="pwd-input" type="password" inputmode="text" autocomplete="off"
+           spellcheck="false" placeholder="Passwort" />
+    <p class="pwd-err" id="pwd-err" role="alert" hidden>Falsches Passwort.</p>
+    <div class="pwd-actions">
+      <button type="button" class="btn-ghost" id="pwd-cancel">Abbrechen</button>
+      <button type="submit" class="btn-gold">Freischalten</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="ed-bar" id="ed-bar" hidden>
+  <span class="ed-live"><span class="ed-dot"></span>Bearbeitung aktiv</span>
+  <span class="ed-status" id="ed-status"></span>
+  <div class="ed-bar-actions">
+    <button type="button" id="ed-undo">Rückgängig</button>
+    <button type="button" id="ed-export-html">Als HTML sichern</button>
+    <button type="button" id="ed-export-json">JSON sichern</button>
+    <button type="button" id="ed-import">JSON laden</button>
+    <button type="button" id="ed-reset">Auslieferungsstand</button>
+    <button type="button" id="ed-lock" class="btn-gold">Sperren</button>
+  </div>
+</div>
+<input type="file" id="ed-file-json" accept="application/json,.json" hidden />
+<input type="file" id="ed-file-img" accept="image/*" multiple hidden />
+
 <script>
+/* Die unveränderte Seite, bevor irgendetwas sie anfasst. Der Bearbeitungsmodus
+   baut daraus beim Export eine neue index.html: dieselbe Datei, nur mit dem
+   aktuellen Inhalt. Muss die erste Anweisung bleiben. */
+const QUELLTEXT = "<!doctype html>\n" + document.documentElement.outerHTML;
+
 /* ==========================================================================
    1 · INHALT
    --------------------------------------------------------------------------
@@ -730,8 +909,44 @@ i,em{font-style:italic}
 
    Tab-Typen: "text" (Absatz), "list" (Aufzählung), "warn" (rote Aufzählung),
    "steps" ({t,d}-Schritte), "roles" ({n,d}-Karten).
+
+   Die beiden Marken HANDBUCH:START / HANDBUCH:END sind kein Schmuck: der
+   HTML-Export im Bearbeitungsmodus ersetzt genau den Bereich dazwischen.
    ========================================================================== */
+/* HANDBUCH:START */
 const HANDBUCH = {
+
+  /* Stand des Inhalts. Der Export schreibt hier die Uhrzeit hinein; beim Laden
+     gewinnt der eingebackene Stand über einen älteren im Browserspeicher. */
+  stand: "2026-09-01T00:00:00.000Z",
+
+  /* Die Texte der Startseite — damit auch sie im Bearbeitungsmodus änderbar
+     sind und nicht als fester Text im Markup stehen. */
+  seite: {
+    marke:["ÜKDO","Taktik"],
+    cta:"Wissenscheck",
+    h1:"Standards schaffen",
+    h1Akzent:"Sicherheit",
+    lead:"Grundsätze vor Technik.",
+    body:"Dieses Handbuch bündelt die Grundprinzipien, die vier Grundtaktiken, die örtlichen Besonderheiten und die Spezialisierungen des Überfallkommandos — an einem Ort, jederzeit nachlesbar, für Einsatzvorbereitung, Training und Nachbereitung.",
+    kennzahlen:[
+      {v:"10", l:"Grundprinzipien", a:true},
+      {v:"4",  l:"Grundtaktiken",   a:false},
+      {v:"2",  l:"Besonderheiten",  a:false},
+      {v:"3",  l:"Spezialisie\u00ADrungen", a:true}
+    ],
+    glossarKopf:{
+      kicker:"Nachschlagen",
+      title:["Glossar und ","Abkürzungen"],
+      intro:"Einheitliche Begriffe sind die Voraussetzung für kurze Meldungen. Wer hier etwas vermisst oder anders verwendet, meldet es der Ausbildungsleitung — Begriffe werden einheitsweit festgelegt, nicht truppweise."
+    },
+    quizKopf:{
+      kicker:"Weiterbildung",
+      title:["Wissenscheck — ","zehn Fragen"],
+      intro:"Kurzabfrage quer durch das Handbuch. Kein Leistungsnachweis, sondern ein Selbsttest für die Einsatzvorbereitung: falsch beantwortete Fragen verweisen auf das zugehörige Kapitel."
+    },
+    fussnote:"Interne Ausbildungsunterlage. Die Inhalte fassen allgemein anerkannte polizeitaktische Grundsätze zusammen und ersetzen keine Dienstvorschrift, keinen Erlass und keine Einsatzbefehle. Verbindlich ist immer die aktuelle Weisungslage der Einheit. Vor der Nutzung im Training durch die Ausbildungsleitung freigeben und um einheitseigene Verfahren ergänzen."
+  },
 
   grundprinzipien: {
     id:"grundprinzipien",
@@ -1347,6 +1562,23 @@ const HANDBUCH = {
      c:2, topic:"Besonderheiten · Wasser", why:"Schutzausstattung wird im Wasser zur Lebensgefahr. Ohne getragenen Auftrieb, Schnelltrennung und ein bereitstehendes Sicherungsboot bewegt sich niemand über Wasser."}
   ]
 };
+/* HANDBUCH:END */
+
+/* Im Bearbeitungsmodus gespeicherter Inhalt. Er gewinnt nur, wenn er neuer ist
+   als der in dieser Datei eingebackene Stand — sonst würde eine frisch
+   exportierte index.html von einem alten Browserspeicher überstimmt. */
+const INHALT_KEY = "ukdo-taktik-inhalt-v1";
+const WERKSTAND = JSON.stringify(HANDBUCH);
+(function ladeInhalt(){
+  try{
+    const roh = localStorage.getItem(INHALT_KEY);
+    if(!roh) return;
+    const d = JSON.parse(roh);
+    if(!d || typeof d !== "object" || !d.stand || d.stand <= HANDBUCH.stand) return;
+    Object.keys(HANDBUCH).forEach(k => delete HANDBUCH[k]);
+    Object.assign(HANDBUCH, d);
+  }catch(_){ /* defekter Speicher: der Auslieferungsstand bleibt stehen */ }
+})();
 
 /* ==========================================================================
    2 · FEDER-INTEGRATOR UND TICKER
@@ -1356,6 +1588,10 @@ const HANDBUCH = {
    bewusst keine CSS-Keyframes.
    ========================================================================== */
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Zustand des Bearbeitungsmodus. Steht hier oben, weil schon der Renderer
+   wissen muss, ob er die Bearbeitungsknöpfe mit ausgeben soll. */
+const EDIT = { on:false, undo:[], t:0 };
 
 class Spring{
   constructor(x, cfg){ this.x=x; this.v=0; this.target=x; this.cfg=cfg; this.rest=true; this.acc=0; this.onRest=null; }
@@ -1854,7 +2090,74 @@ function fitBar(){
 window.addEventListener("resize", fitBar);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitBar);
 
-(function stageHero(){
+/**
+ * Schreibt die Texte der Startseite aus HANDBUCH.seite ins Markup. Nur mit
+ * DOM-Mitteln, ohne innerHTML: der Inhalt ist im Bearbeitungsmodus vom Nutzer
+ * geschrieben und wird nirgends als Auszeichnung interpretiert.
+ */
+function renderSeite(){
+  const S = HANDBUCH.seite;
+  const setz = (el, pfad, text) => { if(!el) return; el.textContent = text; el.dataset.ed = pfad; };
+
+  const bw = document.querySelector(".brand-word");
+  if(bw){
+    bw.textContent = "";
+    const b = document.createElement("b"), i = document.createElement("i");
+    setz(b, "seite.marke.0", S.marke[0]);
+    setz(i, "seite.marke.1", S.marke[1]);
+    bw.append(b, document.createTextNode("\u00a0"), i);
+  }
+
+  const h1 = document.getElementById("hero-title");
+  if(h1){
+    h1.textContent = "";
+    const t = document.createElement("span"), a = document.createElement("i");
+    setz(t, "seite.h1", S.h1);
+    setz(a, "seite.h1Akzent", S.h1Akzent);
+    h1.append(t, document.createTextNode(" "), a);
+  }
+
+  setz(document.querySelector(".lead"), "seite.lead", S.lead);
+  setz(document.querySelector(".body-copy"), "seite.body", S.body);
+  setz(document.querySelector(".cta-btn"), "seite.cta", S.cta);
+  setz(document.querySelector("#menu .menu-cta"), "seite.cta", S.cta);
+  setz(document.getElementById("footer-note"), "seite.fussnote", S.fussnote);
+
+  const ul = document.querySelector(".stats");
+  if(ul){
+    ul.textContent = "";
+    S.kennzahlen.forEach((k, i) => {
+      const li = document.createElement("li");
+      li.className = "stat-card";
+      li.dataset.anim = "stat";
+      if(k.a) li.dataset.accent = "true";
+      const v = document.createElement("p"), l = document.createElement("p");
+      v.className = "val"; l.className = "lbl";
+      setz(v, "seite.kennzahlen."+i+".v", k.v);
+      setz(l, "seite.kennzahlen."+i+".l", k.l);
+      li.append(v, l);
+      ul.append(li);
+    });
+  }
+
+  const qh = document.getElementById("quiz-head");
+  if(qh){
+    const Q = S.quizKopf;
+    qh.textContent = "";
+    const kick = document.createElement("span"), h2 = document.createElement("h2"), p = document.createElement("p");
+    kick.className = "kicker"; h2.className = "chapter-title"; p.className = "chapter-intro";
+    setz(kick, "seite.quizKopf.kicker", Q.kicker);
+    const t0 = document.createElement("span"), t1 = document.createElement("i");
+    setz(t0, "seite.quizKopf.title.0", Q.title[0]);
+    setz(t1, "seite.quizKopf.title.1", Q.title[1]);
+    h2.append(t0, t1);
+    setz(p, "seite.quizKopf.intro", Q.intro);
+    qh.append(kick, h2, p);
+  }
+}
+renderSeite();
+
+function stageHero(){
   const h1 = document.getElementById("hero-title");
   const bar = document.getElementById("headline-bar");
   const rule = document.getElementById("copy-rule");
@@ -1891,7 +2194,8 @@ if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitBar);
     fitBar();
     animate(v => { bar.style.transform = `scaleX(${v})`; bar.style.opacity = v; }, {delay: DELAY.headlineBar});
   });
-})();
+}
+stageHero();
 
 /* Zeigerreaktion für Schaltflächen — dieselbe Feder wie im Entwurf. */
 function hoverLift(el, scale=1.02, y=-0.125){
@@ -1917,109 +2221,160 @@ onReveal(() => {
 
 /* ==========================================================================
    6 · KAPITEL AUFBAUEN
+   --------------------------------------------------------------------------
+   Jeder Text bekommt über `data-ed` den Pfad in HANDBUCH, aus dem er stammt.
+   Im Bearbeitungsmodus wird derselbe Knoten `contenteditable` und schreibt
+   zurück an genau diese Stelle — deshalb bleiben Suche, Wissenscheck und
+   Druckfassung immer auf demselben Stand wie die Anzeige.
+
+   `data-add` hängt an ein Feld an, `data-del` entfernt einen Eintrag,
+   `data-move` verschiebt ihn, `data-img` öffnet die Bildauswahl.
    ========================================================================== */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const CHECK_SVG = '<svg viewBox="0 0 12 10" width="12" height="10" fill="none" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5.2 4.3 8.6 11 1.6"/></svg>';
 const CHEV_SVG  = '<svg class="chev-i" viewBox="0 0 9 7.364" width="9" height="8" fill="none" stroke="currentColor" stroke-width="1"><path d="M0.5 3.682h7.5M5.318 0.5l3.182 3.182-3.182 3.182"/></svg>';
 
-function head(sec){
+/** Ein bearbeitbarer Text. `tag` und `cls` wie sonst auch. */
+const ed = (path, value, tag="span", cls="") =>
+  `<${tag}${cls?` class="${cls}"`:""} data-ed="${path}">${esc(value)}</${tag}>`;
+/** Knopf „Eintrag entfernen“ — nur im Bearbeitungsmodus sichtbar. */
+const del = path => `<button type="button" class="ed-x ed-only" data-del="${path}" aria-label="Eintrag entfernen">✕</button>`;
+const add = (path, kind, label) => `<button type="button" class="ed-add ed-only" data-add="${path}|${kind}">+ ${label}</button>`;
+const move = path => `<span class="ed-move ed-only"><button type="button" data-move="${path}|-1" aria-label="nach oben">↑</button><button type="button" data-move="${path}|1" aria-label="nach unten">↓</button></span>`;
+
+function head(sec, base){
   return `<div class="chapter-head reveal-up">
-    <span class="kicker">${esc(sec.kicker)}</span>
-    <h2 class="chapter-title">${esc(sec.title[0])}<i>${esc(sec.title[1])}</i></h2>
-    <p class="chapter-intro">${esc(sec.intro)}</p>
+    <span class="kicker">${ed(base+".kicker", sec.kicker)}</span>
+    <h2 class="chapter-title">${ed(base+".title.0", sec.title[0])}${ed(base+".title.1", sec.title[1], "i")}</h2>
+    <p class="chapter-intro" data-ed="${base}.intro">${esc(sec.intro)}</p>
   </div>`;
 }
 
-function tabBody(tab){
+/** Bildstreifen. Bilder liegen als Data-URI im Datenmodell — die Seite bleibt
+ *  damit eine einzige Datei, auch nach dem Einfügen eigener Aufnahmen. */
+function mediaHtml(list, path){
+  const items = (list||[]).map((m,i) => `<figure class="shot">
+      <img src="${esc(m.src)}" alt="${esc(m.cap||"")}" loading="lazy" />
+      <figcaption data-ed="${path}.${i}.cap">${esc(m.cap||"")}</figcaption>
+      ${del(path+"."+i)}
+    </figure>`).join("");
+  if(!items && !EDIT.on) return "";
+  return `<div class="media"><h4>Bilder</h4><div class="media-grid">${items}
+    <button type="button" class="ed-shot ed-only" data-img="${path}">Bild einfügen</button>
+  </div></div>`;
+}
+
+function tabBody(tab, tp){
+  const d = tab.data;
   switch(tab.type){
     case "text":
-      return `<p style="font-size:1.0625rem;line-height:1.45">${esc(tab.data)}</p>` +
-        (tab.extra ? `<div><h4 style="margin-bottom:.75rem">Einsatzschwelle / Kernpunkte</h4>
-          <ul class="bullets">${tab.extra.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>` : "");
-    case "list":  return `<ul class="bullets">${tab.data.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
-    case "warn":  return `<ul class="bullets errors">${tab.data.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
-    case "steps": return `<ol class="steps">${tab.data.map(s=>`<li><div><p class="st">${esc(s.t)}</p><p class="sd">${esc(s.d)}</p></div></li>`).join("")}</ol>`;
-    case "roles": return `<div class="roles">${tab.data.map(r=>`<div class="role"><b>${esc(r.n)}</b><span>${esc(r.d)}</span></div>`).join("")}</div>`;
+      return `<p class="tab-text" data-ed="${tp}.data">${esc(d)}</p>` +
+        ((tab.extra && (tab.extra.length || EDIT.on)) ? `<div><h4 style="margin-bottom:.75rem">Einsatzschwelle / Kernpunkte</h4>
+          <ul class="bullets">${(tab.extra||[]).map((x,i)=>`<li><span data-ed="${tp}.extra.${i}">${esc(x)}</span>${del(tp+".extra."+i)}</li>`).join("")}</ul>
+          ${add(tp+".extra","str","Punkt")}</div>` : "");
+    case "list": case "warn":
+      return `<ul class="bullets${tab.type==="warn"?" errors":""}">${d.map((x,i)=>`<li><span data-ed="${tp}.data.${i}">${esc(x)}</span>${del(tp+".data."+i)}</li>`).join("")}</ul>${add(tp+".data","str","Punkt")}`;
+    case "steps":
+      return `<ol class="steps">${d.map((x,i)=>`<li><div><p class="st" data-ed="${tp}.data.${i}.t">${esc(x.t)}</p><p class="sd" data-ed="${tp}.data.${i}.d">${esc(x.d)}</p></div>${move(tp+".data."+i)}${del(tp+".data."+i)}</li>`).join("")}</ol>${add(tp+".data","step","Schritt")}`;
+    case "roles":
+      return `<div class="roles">${d.map((x,i)=>`<div class="role"><b data-ed="${tp}.data.${i}.n">${esc(x.n)}</b><span data-ed="${tp}.data.${i}.d">${esc(x.d)}</span>${del(tp+".data."+i)}</div>`).join("")}</div>${add(tp+".data","role","Rolle")}`;
     default: return "";
   }
 }
 
-function moduleHtml(m){
+function moduleHtml(m, mb){
   const tabs = m.tabs.map((t,i) =>
-    `<button role="tab" id="tab-${m.id}-${i}" aria-controls="panel-${m.id}-${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}">${esc(t.label)}</button>`).join("");
+    `<button role="tab" id="tab-${m.id}-${i}" aria-controls="panel-${m.id}-${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}"><span data-ed="${mb}.tabs.${i}.label">${esc(t.label)}</span></button>`).join("");
   const panels = m.tabs.map((t,i) =>
-    `<div class="tabpanel" role="tabpanel" id="panel-${m.id}-${i}" aria-labelledby="tab-${m.id}-${i}" data-active="${i===0}">${tabBody(t)}</div>`).join("");
+    `<div class="tabpanel" role="tabpanel" id="panel-${m.id}-${i}" aria-labelledby="tab-${m.id}-${i}" data-active="${i===0}">${tabBody(t, mb+".tabs."+i)}
+       <div class="ed-tabbar ed-only">${move(mb+".tabs."+i)}<button type="button" class="ed-add" data-del="${mb}.tabs.${i}">Reiter löschen</button></div>
+     </div>`).join("");
   return `<article class="module reveal-up" id="${m.id}" data-open="false">
     <div class="module-head">
-      <span class="module-abbr"${m.tone?` data-tone="${m.tone}"`:""}>${esc(m.abbr)}</span>
-      <div class="module-titles"><h3>${esc(m.title)}</h3><p>${esc(m.subtitle)}</p></div>
-      <button class="module-toggle" type="button" aria-expanded="false" aria-controls="body-${m.id}">
+      <span class="module-abbr"${m.tone?` data-tone="${m.tone}"`:""} data-ed="${mb}.abbr">${esc(m.abbr)}</span>
+      <div class="module-titles"><h3 data-ed="${mb}.title">${esc(m.title)}</h3><p data-ed="${mb}.subtitle">${esc(m.subtitle)}</p></div>
+      ${move(mb)}
+      <button type="button" class="module-toggle" aria-expanded="false" aria-controls="body-${m.id}">
         <span class="lbl">Öffnen</span><span class="chev">${CHEV_SVG}</span>
       </button>
     </div>
     <div class="panel"><div><div id="body-${m.id}">
-      <div class="tabs" role="tablist" aria-label="${esc(m.title)}">${tabs}</div>
+      <div class="tabs" role="tablist" aria-label="${esc(m.title)}">${tabs}
+        <span class="ed-only ed-tabadd">${add(mb+".tabs","tab-list","Liste")}${add(mb+".tabs","tab-steps","Ablauf")}${add(mb+".tabs","tab-roles","Rollen")}${add(mb+".tabs","tab-text","Absatz")}</span>
+      </div>
       ${panels}
-      <div class="merksatz">${esc(m.merksatz)}</div>
+      ${mediaHtml(m.media, mb+".media")}
+      <div class="merksatz"><span data-ed="${mb}.merksatz">${esc(m.merksatz)}</span></div>
       <div class="mod-foot">
         <label class="check">
           <input type="checkbox" data-learn="${m.id}" />
           <span class="box">${CHECK_SVG}</span>
           <span>Durchgearbeitet</span>
         </label>
-        <span style="font-size:.875rem;color:var(--muted)">Kapitel-Kennung: <i>${esc(m.id)}</i></span>
+        <span style="font-size:.875rem;color:var(--muted)">Kapitel-Kennung: <i>${esc(m.id)}</i>
+          <button type="button" class="ed-add ed-only" data-del="${mb}">Modul löschen</button></span>
       </div>
     </div></div></div>
   </article>`;
 }
 
-function chapterHtml(sec){
+function chapterHtml(sec, base){
   if(sec.items){
-    return `<section class="chapter" id="${sec.id}">${head(sec)}
-      <div class="principles">${sec.items.map(p => `
+    return `<section class="chapter" id="${sec.id}">${head(sec, base)}
+      <div class="principles">${sec.items.map((p,i) => `
         <article class="principle reveal-up" data-open="false" id="prinzip-${p.nr}">
-          <button type="button" aria-expanded="false">
-            <span class="nr">${esc(p.nr)}</span>
-            <span class="p-title">${esc(p.title)}<span class="p-claim">${esc(p.claim)}</span></span>
+          <div class="p-head" role="button" tabindex="0" aria-expanded="false">
+            <span class="nr" data-ed="${base}.items.${i}.nr">${esc(p.nr)}</span>
+            <span class="p-title"><span data-ed="${base}.items.${i}.title">${esc(p.title)}</span><span class="p-claim" data-ed="${base}.items.${i}.claim">${esc(p.claim)}</span></span>
+            ${move(base+".items."+i)}
             <span class="chev">${CHEV_SVG}</span>
-          </button>
+          </div>
           <div class="panel"><div><div class="panel-inner">
-            <ul class="bullets">${p.points.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-            <p class="note">${esc(p.note)}</p>
+            <ul class="bullets">${p.points.map((x,k)=>`<li><span data-ed="${base}.items.${i}.points.${k}">${esc(x)}</span>${del(base+".items."+i+".points."+k)}</li>`).join("")}</ul>
+            ${add(base+".items."+i+".points","str","Punkt")}
+            <p class="note" data-ed="${base}.items.${i}.note">${esc(p.note)}</p>
+            ${mediaHtml(p.media, base+".items."+i+".media")}
+            <div class="ed-tabbar ed-only"><button type="button" class="ed-add" data-del="${base}.items.${i}">Prinzip löschen</button></div>
           </div></div></div>
         </article>`).join("")}</div>
+      <div class="ed-only ed-sectionbar">${add(base+".items","principle","Grundprinzip")}</div>
     </section>`;
   }
-  return `<section class="chapter" id="${sec.id}">${head(sec)}
-    <div class="modules">${sec.modules.map(moduleHtml).join("")}</div>
+  return `<section class="chapter" id="${sec.id}">${head(sec, base)}
+    <div class="modules">${sec.modules.map((m,i) => moduleHtml(m, base+".modules."+i)).join("")}</div>
+    <div class="ed-only ed-sectionbar">${add(base+".modules","module","Modul")}</div>
   </section>`;
 }
 
 const chapters = document.getElementById("chapters");
-chapters.innerHTML =
-  chapterHtml(HANDBUCH.grundprinzipien) +
-  chapterHtml(HANDBUCH.grundtaktiken) +
-  chapterHtml(HANDBUCH.besonderheiten) +
-  chapterHtml(HANDBUCH.spezialisierungen) +
-  `<section class="chapter" id="glossar">
-     <div class="chapter-head reveal-up">
-       <span class="kicker">Nachschlagen</span>
-       <h2 class="chapter-title">Glossar und <i>Abkürzungen</i></h2>
-       <p class="chapter-intro">Einheitliche Begriffe sind die Voraussetzung für kurze Meldungen. Wer hier etwas vermisst oder anders verwendet, meldet es der Ausbildungsleitung — Begriffe werden einheitsweit festgelegt, nicht truppweise.</p>
-     </div>
-     <div class="glossar">${HANDBUCH.glossar.map(g=>`<div class="gloss reveal-up"><b>${esc(g.t)}</b><span>${esc(g.d)}</span></div>`).join("")}</div>
-   </section>`;
+
+function renderChapters(){
+  chapters.innerHTML =
+    chapterHtml(HANDBUCH.grundprinzipien, "grundprinzipien") +
+    chapterHtml(HANDBUCH.grundtaktiken, "grundtaktiken") +
+    chapterHtml(HANDBUCH.besonderheiten, "besonderheiten") +
+    chapterHtml(HANDBUCH.spezialisierungen, "spezialisierungen") +
+    `<section class="chapter" id="glossar">
+       ${head(HANDBUCH.seite.glossarKopf, "seite.glossarKopf")}
+       <div class="glossar">${HANDBUCH.glossar.map((g,i)=>`<div class="gloss reveal-up"><b data-ed="glossar.${i}.t">${esc(g.t)}</b><span data-ed="glossar.${i}.d">${esc(g.d)}</span>${del("glossar."+i)}</div>`).join("")}</div>
+       <div class="ed-only ed-sectionbar">${add("glossar","gloss","Begriff")}</div>
+     </section>`;
+}
+
+renderChapters();
 
 /* ---- Aufklappen: Prinzipien --------------------------------------------- */
+function togglePrinciple(head){
+  const card = head.parentElement;
+  const open = card.dataset.open !== "true";
+  card.dataset.open = String(open);
+  head.setAttribute("aria-expanded", String(open));
+}
 chapters.addEventListener("click", e => {
-  const pBtn = e.target.closest(".principle > button");
-  if(pBtn){
-    const card = pBtn.parentElement;
-    const open = card.dataset.open !== "true";
-    card.dataset.open = String(open);
-    pBtn.setAttribute("aria-expanded", String(open));
-    return;
-  }
+  if(e.target.closest("[data-del],[data-add],[data-move],[data-img]")) return;
+  const imText = EDIT.on && e.target.closest("[data-ed]");
+  const pHead = e.target.closest(".p-head");
+  if(pHead){ if(!imText) togglePrinciple(pHead); return; }
   const mBtn = e.target.closest(".module-toggle");
   if(mBtn){
     const mod = mBtn.closest(".module");
@@ -2030,17 +2385,23 @@ chapters.addEventListener("click", e => {
     return;
   }
   const tab = e.target.closest('[role="tab"]');
-  if(tab){
-    const list = tab.closest('[role="tablist"]');
-    list.querySelectorAll('[role="tab"]').forEach(t => {
-      const on = t === tab;
-      t.setAttribute("aria-selected", String(on));
-      t.tabIndex = on ? 0 : -1;
-      document.getElementById(t.getAttribute("aria-controls")).dataset.active = String(on);
-    });
-  }
+  if(tab) selectTab(tab);
 });
+function selectTab(tab){
+  const list = tab.closest('[role="tablist"]');
+  list.querySelectorAll('[role="tab"]').forEach(t => {
+    const on = t === tab;
+    t.setAttribute("aria-selected", String(on));
+    t.tabIndex = on ? 0 : -1;
+    const panel = document.getElementById(t.getAttribute("aria-controls"));
+    if(panel) panel.dataset.active = String(on);
+  });
+}
 chapters.addEventListener("keydown", e => {
+  const pHead = e.target.closest(".p-head");
+  if(pHead && !e.target.closest("[data-ed]") && (e.key === "Enter" || e.key === " ")){
+    e.preventDefault(); togglePrinciple(pHead); return;
+  }
   const tab = e.target.closest('[role="tab"]');
   if(!tab || !["ArrowLeft","ArrowRight"].includes(e.key)) return;
   const all = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
@@ -2057,7 +2418,7 @@ function openTarget(id){
   if(mod){ mod.dataset.open = "true";
     const t = mod.querySelector(".module-toggle");
     t.setAttribute("aria-expanded","true"); t.querySelector(".lbl").textContent = "Schließen"; }
-  if(pri){ pri.dataset.open = "true"; pri.querySelector("button").setAttribute("aria-expanded","true"); }
+  if(pri){ pri.dataset.open = "true"; pri.querySelector(".p-head").setAttribute("aria-expanded","true"); }
   (mod || pri || el).scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block:"start"});
 }
 
@@ -2071,24 +2432,28 @@ const INDEX = [];
 const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 function idx(section, title, target, text){ INDEX.push({section, title, target, hay: norm(title+" "+text)}); }
 
-HANDBUCH.grundprinzipien.items.forEach(p =>
-  idx("Grundprinzipien", p.nr + " · " + p.title, "prinzip-"+p.nr, p.claim+" "+p.points.join(" ")+" "+p.note));
+function buildIndex(){
+  INDEX.length = 0;
+  HANDBUCH.grundprinzipien.items.forEach(p =>
+    idx("Grundprinzipien", p.nr + " · " + p.title, "prinzip-"+p.nr, p.claim+" "+p.points.join(" ")+" "+p.note));
 
-[["Grundtaktiken", HANDBUCH.grundtaktiken],
- ["Besonderheiten", HANDBUCH.besonderheiten],
- ["Spezialisierungen", HANDBUCH.spezialisierungen]].forEach(([label, sec]) => {
-  sec.modules.forEach(m => {
-    idx(label, m.abbr + " — " + m.title, m.id, m.subtitle + " " + m.merksatz);
-    m.tabs.forEach(t => {
-      const flat = t.type==="steps" ? t.data.map(s=>s.t+" "+s.d).join(" ")
-                 : t.type==="roles" ? t.data.map(r=>r.n+" "+r.d).join(" ")
-                 : Array.isArray(t.data) ? t.data.join(" ")
-                 : t.data + " " + (t.extra||[]).join(" ");
-      idx(label + " · " + m.abbr, t.label, m.id, flat);
+  [["Grundtaktiken", HANDBUCH.grundtaktiken],
+   ["Besonderheiten", HANDBUCH.besonderheiten],
+   ["Spezialisierungen", HANDBUCH.spezialisierungen]].forEach(([label, sec]) => {
+    sec.modules.forEach(m => {
+      idx(label, m.abbr + " — " + m.title, m.id, m.subtitle + " " + m.merksatz);
+      m.tabs.forEach(t => {
+        const flat = t.type==="steps" ? t.data.map(s=>s.t+" "+s.d).join(" ")
+                   : t.type==="roles" ? t.data.map(r=>r.n+" "+r.d).join(" ")
+                   : Array.isArray(t.data) ? t.data.join(" ")
+                   : t.data + " " + (t.extra||[]).join(" ");
+        idx(label + " · " + m.abbr, t.label, m.id, flat);
+      });
     });
   });
-});
-HANDBUCH.glossar.forEach(g => idx("Glossar", g.t, "glossar", g.d));
+  HANDBUCH.glossar.forEach(g => idx("Glossar", g.t, "glossar", g.d));
+}
+buildIndex();
 
 const searchForm = document.getElementById("search");
 const qInput = document.getElementById("q");
@@ -2144,7 +2509,8 @@ hits.addEventListener("click", e => {
 });
 document.addEventListener("click", e => { if(!searchForm.contains(e.target)) closeHits(); });
 document.addEventListener("keydown", e => {
-  if(e.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
+  if(e.key === "/" && !document.activeElement.isContentEditable
+     && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
     e.preventDefault(); window.scrollTo({top:0, behavior: REDUCED?"auto":"smooth"}); qInput.focus();
   }
 });
@@ -2153,7 +2519,7 @@ document.addEventListener("keydown", e => {
    8 · LERNFORTSCHRITT (localStorage)
    ========================================================================== */
 const STORE = "ukdo-taktik-fortschritt-v1";
-const learnBoxes = [...document.querySelectorAll("input[data-learn]")];
+let learnBoxes = [];
 const fill = document.getElementById("progress-fill");
 const plabel = document.getElementById("progress-label");
 
@@ -2166,23 +2532,28 @@ function paintProgress(){
   plabel.textContent = `${done} / ${learnBoxes.length}`;
   fill.style.width = (learnBoxes.length ? done/learnBoxes.length*100 : 0) + "%";
 }
-(function initProgress(){
+function initProgress(){
+  learnBoxes = [...document.querySelectorAll("input[data-learn]")];
   const state = readState();
-  learnBoxes.forEach(b => { b.checked = !!state[b.dataset.learn]; });
-  paintProgress();
-  learnBoxes.forEach(b => b.addEventListener("change", () => {
-    const s = readState(); s[b.dataset.learn] = b.checked; writeState(s); paintProgress();
-  }));
-  document.getElementById("progress-reset").addEventListener("click", () => {
-    writeState({}); learnBoxes.forEach(b => b.checked = false); paintProgress();
+  learnBoxes.forEach(b => {
+    b.checked = !!state[b.dataset.learn];
+    b.addEventListener("change", () => {
+      const s = readState(); s[b.dataset.learn] = b.checked; writeState(s); paintProgress();
+    });
   });
-})();
+  paintProgress();
+}
+initProgress();
+document.getElementById("progress-reset").addEventListener("click", () => {
+  writeState({}); learnBoxes.forEach(b => b.checked = false); paintProgress();
+});
 
 /* ==========================================================================
    9 · WISSENSCHECK
    ========================================================================== */
+let startQuiz = () => {};
 (function quiz(){
-  const order = HANDBUCH.quiz.map((_,i) => i).sort(() => Math.random() - .5);
+  let order = HANDBUCH.quiz.map((_,i) => i).sort(() => Math.random() - .5);
   let pos = 0, score = 0, answered = false;
   const qEl = document.getElementById("quiz-q");
   const aEl = document.getElementById("quiz-answers");
@@ -2203,7 +2574,7 @@ function paintProgress(){
         ? "Vollständig. Trotzdem gilt: Wissen ist die Voraussetzung, Training ist die Leistung."
         : "Die falsch beantworteten Themen im zugehörigen Kapitel nachlesen und im nächsten Training ansprechen.";
       nEl.hidden = false; nEl.textContent = "Noch einmal";
-      nEl.onclick = () => { order.sort(() => Math.random() - .5); pos = 0; score = 0; render(); };
+      nEl.onclick = () => startQuiz();
       return;
     }
     const q = HANDBUCH.quiz[order[pos]];
@@ -2232,7 +2603,11 @@ function paintProgress(){
     wEl.hidden = false; nEl.hidden = false;
     sEl.textContent = `Frage ${pos+1} von ${order.length} · ${score} richtig`;
   });
-  render();
+  startQuiz = () => {
+    order = HANDBUCH.quiz.map((_,i) => i).sort(() => Math.random() - .5);
+    pos = 0; score = 0; render();
+  };
+  startQuiz();
 })();
 
 /* ==========================================================================
@@ -2285,9 +2660,10 @@ function paintProgress(){
 })();
 
 /* Inhalte unterhalb des Heros treten beim Erreichen ein — dieselbe Hausfeder. */
-(function scrollEntrances(){
-  const items = [...document.querySelectorAll(".reveal-up")];
-  if(REDUCED){ items.forEach(el => el.style.cssText = ""); return; }
+function scrollEntrances(){
+  const items = [...document.querySelectorAll(".reveal-up:not([data-seen])")];
+  items.forEach(el => el.dataset.seen = "1");
+  if(REDUCED || EDIT.on){ items.forEach(el => { el.style.opacity = 1; el.style.transform = "none"; }); return; }
   items.forEach(el => { el.style.opacity = 0; });
   const io = new IntersectionObserver((entries, obs) => {
     entries.forEach(en => {
@@ -2299,7 +2675,8 @@ function paintProgress(){
     });
   }, {rootMargin:"0px 0px -10% 0px", threshold:0.08});
   items.forEach(el => io.observe(el));
-})();
+}
+scrollEntrances();
 
 /* ---- Einheitszeichen ----------------------------------------------------
    Ersatzzeichen, damit die Seite ohne jede externe Datei läuft. Um das echte
@@ -2325,8 +2702,395 @@ if(LOGO_SRC){
   img.src = LOGO_SRC;
 }
 
+/* ==========================================================================
+   11 · BEARBEITUNGSMODUS
+   --------------------------------------------------------------------------
+   Der Stift oben rechts fragt ein Passwort ab und macht danach jeden Text auf
+   der Seite änderbar. Geschrieben wird nicht ins Markup, sondern über den Pfad
+   in `data-ed` zurück in HANDBUCH — deshalb bleiben Suche, Wissenscheck,
+   Lernfortschritt und Druckfassung immer auf demselben Stand.
+
+   > Das Passwort ist ausdrücklich KEIN Schutz. Wer die Datei besitzt, besitzt
+   > den Inhalt; der Riegel verhindert versehentliches Verändern, mehr nicht.
+   > Der Wert steht deshalb als Prüfsumme hier, nicht im Klartext.
+   ========================================================================== */
+
+/** Zwei unabhängige 32-Bit-Streuwerte plus Länge. Math.imul rechnet exakt in
+ *  32 Bit — mit `*` verlöre die Rechnung ab 2^53 an Genauigkeit. */
+function schluessel(text){
+  const s = String(text).normalize("NFC");
+  let a = 0x811c9dc5, b = 0x01000193;
+  for(let i = 0; i < s.length; i++){
+    const c = s.charCodeAt(i);
+    a = Math.imul(a ^ c, 16777619) >>> 0;
+    b = (Math.imul(b, 33) ^ Math.imul(c, 5) ^ i) >>> 0;
+  }
+  return a.toString(16) + "-" + b.toString(16) + "-" + s.length;
+}
+const SCHLUESSEL = "380af90a-6515eb84-9";
+
+/* ---- Pfade im Datenmodell ------------------------------------------------ */
+const pfadHol = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+function pfadSetz(o, p, v){
+  const k = p.split("."), last = k.pop();
+  const ziel = k.reduce((a, x) => a[x], o);
+  if(ziel) ziel[last] = v;
+}
+function pfadWeg(o, p){
+  const k = p.split("."), last = k.pop();
+  const ziel = k.reduce((a, x) => a[x], o);
+  if(!ziel) return;
+  if(Array.isArray(ziel)) ziel.splice(+last, 1); else delete ziel[last];
+}
+function pfadSchieb(o, p, dir){
+  const k = p.split("."), last = +k.pop();
+  const arr = k.reduce((a, x) => a[x], o);
+  if(!Array.isArray(arr)) return;
+  const ziel = last + dir;
+  if(ziel < 0 || ziel >= arr.length) return;
+  arr.splice(ziel, 0, arr.splice(last, 1)[0]);
+}
+
+/** Rohlinge für neue Einträge. Sie sind bewusst ausgefüllt: ein leeres Feld
+ *  sieht im Layout aus wie ein Fehler, ein Platzhalter wie eine Aufgabe. */
+const VORLAGE = {
+  str:   () => "Neuer Punkt",
+  step:  () => ({t:"Neuer Schritt", d:"Was dabei zu tun ist."}),
+  role:  () => ({n:"Neue Rolle", d:"Wofür diese Rolle zuständig ist."}),
+  gloss: () => ({t:"Begriff", d:"Erklärung."}),
+  quiz:  () => ({q:"Neue Frage?", a:["Antwort A","Antwort B","Antwort C","Antwort D"], c:0,
+                 topic:"Kapitel", why:"Begründung der richtigen Antwort."}),
+  principle: () => ({nr:"00", title:"Neues Grundprinzip", claim:"Der Satz in einer Zeile.",
+                     points:["Erster Punkt."], note:"Hinweis."}),
+  module: () => ({id:"modul-" + Date.now().toString(36), abbr:"NEU", title:"Neues Modul",
+                  subtitle:"Kurzbeschreibung.", merksatz:"Merksatz.",
+                  tabs:[{label:"Grundsätze", type:"list", data:["Erster Grundsatz."]}]}),
+  "tab-list":  () => ({label:"Grundsätze", type:"list",  data:["Erster Punkt."]}),
+  "tab-warn":  () => ({label:"Fehlerbilder", type:"warn", data:["Erster Fehler."]}),
+  "tab-steps": () => ({label:"Ablauf", type:"steps", data:[{t:"Erster Schritt", d:"Beschreibung."}]}),
+  "tab-roles": () => ({label:"Rollen", type:"roles", data:[{n:"Rolle", d:"Aufgabe."}]}),
+  "tab-text":  () => ({label:"Zweck", type:"text", data:"Beschreibender Absatz."})
+};
+
+/* ---- Speichern ----------------------------------------------------------- */
+const edStatus = document.getElementById("ed-status");
+let statusTimer = 0;
+function melde(text, warn){
+  if(!edStatus) return;
+  edStatus.textContent = text;
+  edStatus.dataset.warn = warn ? "true" : "false";
+  clearTimeout(statusTimer);
+  if(!warn) statusTimer = setTimeout(() => { edStatus.textContent = ""; }, 2500);
+}
+function speichern(){
+  HANDBUCH.stand = new Date().toISOString();
+  try{
+    localStorage.setItem(INHALT_KEY, JSON.stringify(HANDBUCH));
+    melde("gespeichert");
+  }catch(err){
+    melde("Speicher voll — bitte „Als HTML sichern“ benutzen.", true);
+  }
+}
+function merken(){
+  EDIT.undo.push(JSON.stringify(HANDBUCH));
+  if(EDIT.undo.length > 40) EDIT.undo.shift();
+}
+
+/* ---- Neu aufbauen, ohne den Platz zu verlieren --------------------------- */
+function zustand(){
+  return {
+    offen: [...document.querySelectorAll('.module[data-open="true"],.principle[data-open="true"]')].map(e => e.id),
+    reiter: [...document.querySelectorAll('[role="tab"][aria-selected="true"]')].map(t => t.id),
+    y: window.scrollY
+  };
+}
+function zustandZurueck(z){
+  z.offen.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.dataset.open = "true";
+    const t = el.querySelector(".module-toggle");
+    if(t){ t.setAttribute("aria-expanded","true"); t.querySelector(".lbl").textContent = "Schließen"; }
+    const h = el.querySelector(".p-head");
+    if(h) h.setAttribute("aria-expanded","true");
+  });
+  z.reiter.forEach(id => { const t = document.getElementById(id); if(t) selectTab(t); });
+  window.scrollTo(0, z.y);
+}
+function neuAufbauen(){
+  const z = zustand();
+  renderSeite();
+  renderChapters();
+  buildIndex();
+  initProgress();
+  scrollEntrances();
+  renderQuizEditor();
+  bearbeitbar();
+  fitBar();
+  zustandZurueck(z);
+}
+
+/* ---- Fragen-Editor ------------------------------------------------------- */
+const quizEdit = document.getElementById("quiz-edit");
+function renderQuizEditor(){
+  if(!quizEdit) return;
+  if(!EDIT.on){ quizEdit.innerHTML = ""; return; }
+  quizEdit.innerHTML = HANDBUCH.quiz.map((q, i) => `
+    <div class="qe">
+      <p class="qe-q" data-ed="quiz.${i}.q">${esc(q.q)}</p>
+      ${q.a.map((a, k) => `<div class="qe-row">
+          <input type="radio" name="qc-${i}" ${k === q.c ? "checked" : ""} data-correct="${i}|${k}"
+                 aria-label="Antwort ${k + 1} als richtig markieren" />
+          <span data-ed="quiz.${i}.a.${k}">${esc(a)}</span>
+        </div>`).join("")}
+      <p class="qe-meta">Kapitel: <span data-ed="quiz.${i}.topic">${esc(q.topic)}</span></p>
+      <p class="qe-meta">Begründung: <span data-ed="quiz.${i}.why">${esc(q.why)}</span></p>
+      <div class="qe-foot">${move("quiz." + i)}<button type="button" class="ed-add" data-del="quiz.${i}">Frage löschen</button></div>
+    </div>`).join("") +
+    `<div class="ed-sectionbar" style="display:flex">${add("quiz","quiz","Frage")}</div>`;
+}
+
+/* ---- Bearbeitbarkeit an- und abschalten ---------------------------------- */
+function bearbeitbar(){
+  document.querySelectorAll("[data-ed]").forEach(el => {
+    el.contentEditable = EDIT.on ? "true" : "false";
+    if(EDIT.on) el.spellcheck = true;
+  });
+}
+
+function freischalten(an){
+  EDIT.on = an;
+  document.body.dataset.edit = an ? "on" : "off";
+  document.getElementById("ed-bar").hidden = !an;
+  const btn = document.getElementById("edit-btn");
+  btn.setAttribute("aria-label", an ? "Bearbeitung sperren" : "Bearbeitung freischalten");
+  btn.title = an ? "Bearbeitung sperren" : "Bearbeiten";
+  try{ sessionStorage.setItem("ukdo-edit", an ? "1" : "0"); }catch(_){}
+  neuAufbauen();
+  if(an) melde("freigeschaltet");
+}
+
+/* ---- Passwortabfrage ----------------------------------------------------- */
+const dlg = document.getElementById("pwd");
+document.getElementById("edit-btn").addEventListener("click", () => {
+  if(EDIT.on){ freischalten(false); return; }
+  document.getElementById("pwd-err").hidden = true;
+  document.getElementById("pwd-input").value = "";
+  dlg.showModal();
+  setTimeout(() => document.getElementById("pwd-input").focus(), 30);
+});
+document.getElementById("pwd-cancel").addEventListener("click", () => dlg.close());
+document.getElementById("pwd-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const wert = document.getElementById("pwd-input").value;
+  if(schluessel(wert) === SCHLUESSEL){ dlg.close(); freischalten(true); }
+  else{
+    document.getElementById("pwd-err").hidden = false;
+    document.getElementById("pwd-input").select();
+  }
+});
+try{ if(sessionStorage.getItem("ukdo-edit") === "1") freischalten(true); }catch(_){}
+
+/* ---- Texte schreiben ----------------------------------------------------- */
+function uebernehmen(el){
+  if(!el || !el.dataset.ed) return;
+  const neu = el.textContent.replace(/\s+/g, " ").trim();
+  if(pfadHol(HANDBUCH, el.dataset.ed) === neu) return;
+  pfadSetz(HANDBUCH, el.dataset.ed, neu);
+  buildIndex();
+  speichern();
+}
+document.addEventListener("focusin", e => {
+  const el = e.target.closest("[data-ed]");
+  if(EDIT.on && el && el.isContentEditable) merken();
+});
+document.addEventListener("input", e => {
+  const el = e.target.closest("[data-ed]");
+  if(!EDIT.on || !el || !el.isContentEditable) return;
+  clearTimeout(EDIT.t);
+  EDIT.t = setTimeout(() => uebernehmen(el), 500);
+});
+document.addEventListener("focusout", e => {
+  const el = e.target.closest("[data-ed]");
+  if(!EDIT.on || !el) return;
+  clearTimeout(EDIT.t);
+  uebernehmen(el);
+});
+/* Eingefügter Text kommt ohne Auszeichnung an; die Eingabetaste beendet das
+   Feld, statt ein <div> zu erzeugen. Tasten dürfen nicht bis zu Reiter- und
+   Aufklapp-Bedienung durchschlagen. */
+document.addEventListener("paste", e => {
+  const el = e.target.closest("[data-ed]");
+  if(!EDIT.on || !el || !el.isContentEditable) return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text/plain").replace(/\s+/g, " ");
+  document.execCommand("insertText", false, text);
+});
+document.addEventListener("keydown", e => {
+  const el = e.target.closest("[data-ed]");
+  if(!EDIT.on || !el || !el.isContentEditable) return;
+  if(e.key === "Enter"){ e.preventDefault(); el.blur(); return; }
+  if(e.key === " ") e.stopPropagation();
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z"){ e.preventDefault(); zurueck(); }
+}, true);
+
+/* ---- Struktur ändern ----------------------------------------------------- */
+document.addEventListener("click", e => {
+  if(!EDIT.on) return;
+
+  const rd = e.target.closest("[data-correct]");
+  if(rd){
+    const [i, k] = rd.dataset.correct.split("|").map(Number);
+    merken(); HANDBUCH.quiz[i].c = k; speichern(); startQuiz();
+    return;
+  }
+  const dl = e.target.closest("[data-del]");
+  if(dl){ merken(); pfadWeg(HANDBUCH, dl.dataset.del); speichern(); neuAufbauen(); startQuiz(); return; }
+
+  const ad = e.target.closest("[data-add]");
+  if(ad){
+    const [pfad, art] = ad.dataset.add.split("|");
+    const ziel = pfadHol(HANDBUCH, pfad);
+    if(!Array.isArray(ziel)){ /* z. B. `extra` fehlt noch */
+      const k = pfad.split("."), last = k.pop();
+      const eltern = k.reduce((a, x) => a[x], HANDBUCH);
+      eltern[last] = [];
+    }
+    merken();
+    pfadHol(HANDBUCH, pfad).push(VORLAGE[art]());
+    speichern(); neuAufbauen(); startQuiz();
+    return;
+  }
+  const mv = e.target.closest("[data-move]");
+  if(mv){
+    const [pfad, dir] = mv.dataset.move.split("|");
+    merken(); pfadSchieb(HANDBUCH, pfad, +dir); speichern(); neuAufbauen(); startQuiz();
+    return;
+  }
+  const im = e.target.closest("[data-img]");
+  if(im){ bildZiel = im.dataset.img; document.getElementById("ed-file-img").click(); }
+});
+
+/* ---- Bilder -------------------------------------------------------------- */
+let bildZiel = "";
+/**
+ * Verkleinert auf höchstens 1600 px Kantenlänge und legt das Ergebnis als
+ * Data-URI ab. Ungefragt: Aufnahmen aus einem Telefon sind mehrere Megabyte
+ * groß, und der Browserspeicher fasst insgesamt nur wenige.
+ */
+function bildEinlesen(datei, max = 1600){
+  return new Promise((fertig, fehler) => {
+    const fr = new FileReader();
+    fr.onerror = fehler;
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = fehler;
+      img.onload = () => {
+        const sc = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.width * sc));
+        c.height = Math.max(1, Math.round(img.height * sc));
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        let out = "";
+        try{ out = c.toDataURL("image/webp", .82); }catch(_){}
+        if(out.indexOf("data:image/webp") !== 0) out = c.toDataURL("image/jpeg", .85);
+        fertig(out);
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(datei);
+  });
+}
+document.getElementById("ed-file-img").addEventListener("change", async e => {
+  const dateien = [...e.target.files];
+  e.target.value = "";
+  if(!dateien.length || !bildZiel) return;
+  melde("Bilder werden verkleinert …");
+  merken();
+  const k = bildZiel.split("."), last = k.pop();
+  const eltern = k.reduce((a, x) => a[x], HANDBUCH);
+  if(!Array.isArray(eltern[last])) eltern[last] = [];
+  for(const d of dateien){
+    try{ eltern[last].push({ src: await bildEinlesen(d), cap: d.name.replace(/\.[^.]+$/, "") }); }
+    catch(_){ melde("Ein Bild konnte nicht gelesen werden.", true); }
+  }
+  speichern(); neuAufbauen();
+});
+
+/* ---- Rückgängig, Sichern, Laden, Zurücksetzen ---------------------------- */
+function zurueck(){
+  const alt = EDIT.undo.pop();
+  if(!alt){ melde("Nichts zum Rückgängigmachen."); return; }
+  const d = JSON.parse(alt);
+  Object.keys(HANDBUCH).forEach(k => delete HANDBUCH[k]);
+  Object.assign(HANDBUCH, d);
+  speichern(); neuAufbauen(); startQuiz();
+  melde("rückgängig");
+}
+function herunterladen(inhalt, name, typ){
+  const url = URL.createObjectURL(new Blob([inhalt], {type: typ}));
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+document.getElementById("ed-undo").addEventListener("click", zurueck);
+document.getElementById("ed-lock").addEventListener("click", () => freischalten(false));
+document.getElementById("ed-export-json").addEventListener("click", () => {
+  herunterladen(JSON.stringify(HANDBUCH, null, 2), "ukdo-handbuch.json", "application/json");
+  melde("JSON gesichert");
+});
+document.getElementById("ed-import").addEventListener("click", () => document.getElementById("ed-file-json").click());
+document.getElementById("ed-file-json").addEventListener("change", e => {
+  const datei = e.target.files[0];
+  e.target.value = "";
+  if(!datei) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const d = JSON.parse(fr.result);
+      if(!d || !d.seite || !d.grundprinzipien) throw new Error("kein Handbuch");
+      merken();
+      Object.keys(HANDBUCH).forEach(k => delete HANDBUCH[k]);
+      Object.assign(HANDBUCH, d);
+      speichern(); neuAufbauen(); startQuiz();
+      melde("geladen");
+    }catch(_){ melde("Datei ist kein gültiges Handbuch.", true); }
+  };
+  fr.readAsText(datei);
+});
+document.getElementById("ed-reset").addEventListener("click", () => {
+  if(!confirm("Alle Änderungen verwerfen und den Auslieferungsstand dieser Datei wiederherstellen?")) return;
+  merken();
+  const d = JSON.parse(WERKSTAND);
+  Object.keys(HANDBUCH).forEach(k => delete HANDBUCH[k]);
+  Object.assign(HANDBUCH, d);
+  try{ localStorage.removeItem(INHALT_KEY); }catch(_){}
+  neuAufbauen(); startQuiz();
+  melde("Auslieferungsstand wiederhergestellt");
+});
+
+/**
+ * Baut aus der festgehaltenen Urfassung eine neue, vollständige index.html:
+ * derselbe Quelltext, nur der Bereich zwischen den beiden HANDBUCH-Marken
+ * durch den aktuellen Inhalt ersetzt. Das Ergebnis ist wieder eine einzige
+ * Datei, die überall ohne Browserspeicher denselben Stand zeigt.
+ */
+document.getElementById("ed-export-html").addEventListener("click", () => {
+  const A = "/* HANDBUCH:START */", B = "/* HANDBUCH:END */";
+  const i = QUELLTEXT.indexOf(A), k = QUELLTEXT.indexOf(B);
+  if(i < 0 || k < 0){ melde("Marken im Quelltext nicht gefunden.", true); return; }
+  HANDBUCH.stand = new Date().toISOString();
+  const neu = QUELLTEXT.slice(0, i) + A + "\nconst HANDBUCH = " +
+              JSON.stringify(HANDBUCH, null, 2) + ";\n" + QUELLTEXT.slice(k);
+  herunterladen(neu, "index.html", "text/html;charset=utf-8");
+  speichern();
+  melde("index.html gesichert — diese Datei ersetzt die bisherige.");
+});
+
 /* Sanfter Anker-Sprung ohne den fixierten Kopf zu unterlaufen. */
 document.addEventListener("click", e => {
+  if(EDIT.on && e.target.closest("[data-ed]")) return;
   const a = e.target.closest('a[href^="#"]');
   if(!a) return;
   const id = a.getAttribute("href").slice(1);
